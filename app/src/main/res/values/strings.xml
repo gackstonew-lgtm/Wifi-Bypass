@@ -1,9 +1,15 @@
 <resources>
     <string name="app_name">WiFiBridgeBypass</string>
-    <string name="checking_wifi">Checking Wi-Fi status...</string>
-    <string name="open_login_page">Open Login Page</string>
+    <string name="checking_wifi">Checking Wi-Fi status…</string>
+    <string name="open_login_page">Open Wi-Fi Sign-In Page</string>
+    <string name="step1_hotspot">Step 1: Turn on your phone\'s Mobile Hotspot (Android restricts apps from doing this automatically) and connect your other device to it.</string>
+    <string name="open_hotspot_settings">Open Hotspot Settings</string>
     <string name="start_bridge">Start Wi-Fi Bridge</string>
     <string name="stop_bridge">Stop Bridge</string>
-    <string name="bridge_started">Bridge started — sharing connection via proxy</string>
-    <string name="instructions">Instructions:\n1. Connect to Wi-Fi first.\n2. If a sign-in page is required, use \'Open Login Page\'.\n3. Once verified, start the bridge.\n4. On your other device, set its proxy to this device\'s IP address and port 8080.</string>
+    <string name="bridge_starting">Starting bridge…</string>
+    <string name="active_connections_zero">Active connections: 0</string>
+    <string name="active_connections">Active connections: %1$d</string>
+    <string name="address_placeholder">Bridge address will appear here once running</string>
+    <string name="address_prefix">Point your other device\'s SOCKS5 proxy at port 1080 on:</string>
+    <string name="instructions">Instructions:\n1. Connect this phone to Wi-Fi and complete sign-in if prompted.\n2. Turn on this phone\'s Mobile Hotspot and connect your other device to it.\n3. Tap \'Start Wi-Fi Bridge\'.\n4. On your other device, set its SOCKS5 proxy to this phone\'s hotspot IP address (shown above) on port 1080.\n5. The bridge automatically stops if this phone\'s Wi-Fi disconnects or becomes invalid.</string>
 </resources>

@@ -2,12 +2,12 @@ package com.example.wifibridgebypass
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.wifibridgebypass.databinding.ActivityMainBinding
-import com.example.wifibridgebypass.services.ProxyBridgeService
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,18 +26,18 @@ class MainActivity : AppCompatActivity() {
 
         setupObservers()
         setupListeners()
-
-        // Initial check
-        viewModel.checkWifiStatus()
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.checkWifiStatus()
+        // Re-check every time the user comes back — e.g. after finishing a
+        // captive-portal sign-in in the browser, or after manually turning
+        // on their hotspot in system settings.
+        viewModel.refreshWifiStatus()
     }
 
     private fun setupObservers() {
-        viewModel.wifiStatus.observe(this) { status ->
+        viewModel.statusText.observe(this) { status ->
             binding.statusText.text = status
         }
 
@@ -45,18 +45,31 @@ class MainActivity : AppCompatActivity() {
             binding.loginButton.visibility = if (isCaptive) View.VISIBLE else View.GONE
         }
 
-        viewModel.canStartBridge.observe(this) { canStart ->
-            binding.startBridgeButton.isEnabled = canStart
-            binding.startBridgeButton.alpha = if (canStart) 1.0f else 0.5f
-        }
-
-        viewModel.bridgeActive.observe(this) { isActive ->
-            if (isActive) {
+        viewModel.bridgeRunning.observe(this) { running ->
+            if (running) {
                 binding.startBridgeButton.text = getString(R.string.stop_bridge)
                 binding.startBridgeButton.setBackgroundColor(getColor(android.R.color.holo_red_dark))
             } else {
                 binding.startBridgeButton.text = getString(R.string.start_bridge)
                 binding.startBridgeButton.setBackgroundColor(getColor(android.R.color.holo_green_dark))
+            }
+        }
+
+        viewModel.activeConnections.observe(this) { count ->
+            binding.connectionsText.text = getString(R.string.active_connections, count)
+        }
+
+        viewModel.localAddresses.observe(this) { addresses ->
+            binding.addressText.text = if (addresses.isEmpty()) {
+                getString(R.string.address_placeholder)
+            } else {
+                getString(R.string.address_prefix) + "\n" + addresses.joinToString("\n")
+            }
+        }
+
+        viewModel.lastError.observe(this) { error ->
+            if (!error.isNullOrBlank()) {
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -66,32 +79,24 @@ class MainActivity : AppCompatActivity() {
             viewModel.openCaptivePortalLogin(this)
         }
 
-        binding.startBridgeButton.setOnClickListener {
-            if (viewModel.isBridgeActive) {
-                stopBridgeService()
-            } else {
-                startBridgeService()
+        binding.hotspotSettingsButton.setOnClickListener {
+            // Android 10+ doesn't let apps start the hotspot programmatically,
+            // so we deep-link into the system settings screen instead and the
+            // user flips it on manually.
+            try {
+                startActivity(Intent(Settings.ACTION_WIFI_TETHER_SETTING_ACTION))
+            } catch (e: Exception) {
+                startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
             }
         }
-    }
 
-    private fun startBridgeService() {
-        val intent = Intent(this, ProxyBridgeService::class.java)
-        startForegroundService(intent)
-        viewModel.setBridgeActive(true)
-        Toast.makeText(this, R.string.bridge_started, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun stopBridgeService() {
-        val intent = Intent(this, ProxyBridgeService::class.java)
-        stopService(intent)
-        viewModel.setBridgeActive(false)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (viewModel.isBridgeActive) {
-            stopBridgeService()
+        binding.startBridgeButton.setOnClickListener {
+            if (viewModel.bridgeRunning.value == true) {
+                viewModel.stopBridge(this)
+            } else {
+                viewModel.startBridge(this)
+                Toast.makeText(this, R.string.bridge_starting, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

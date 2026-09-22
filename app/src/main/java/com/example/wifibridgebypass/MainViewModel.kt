@@ -8,55 +8,85 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.wifibridgebypass.services.ProxyBridgeService
+import com.example.wifibridgebypass.utils.WifiState
 import com.example.wifibridgebypass.utils.WifiUtils
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _wifiStatus = MutableLiveData("Checking Wi-Fi status...")
-    val wifiStatus: LiveData<String> = _wifiStatus
+    private val _statusText = MutableLiveData("Checking Wi-Fi status...")
+    val statusText: LiveData<String> = _statusText
 
     private val _captivePortalDetected = MutableLiveData(false)
     val captivePortalDetected: LiveData<Boolean> = _captivePortalDetected
 
-    private val _canStartBridge = MutableLiveData(false)
-    val canStartBridge: LiveData<Boolean> = _canStartBridge
+    private val _bridgeRunning = MutableLiveData(false)
+    val bridgeRunning: LiveData<Boolean> = _bridgeRunning
 
-    private val _bridgeActive = MutableLiveData(false)
-    val bridgeActive: LiveData<Boolean> = _bridgeActive
+    private val _activeConnections = MutableLiveData(0)
+    val activeConnections: LiveData<Int> = _activeConnections
 
-    var isBridgeActive: Boolean = false
-        private set
+    private val _localAddresses = MutableLiveData<List<String>>(emptyList())
+    val localAddresses: LiveData<List<String>> = _localAddresses
 
-    fun checkWifiStatus() {
-        val context = getApplication<Application>().applicationContext
+    private val _lastError = MutableLiveData<String?>(null)
+    val lastError: LiveData<String?> = _lastError
+
+    init {
+        // Reflect the service's own state (it's the source of truth once running,
+        // since it reacts to Wi-Fi loss independently of the UI being open).
         viewModelScope.launch {
-            val connected = WifiUtils.isWifiConnected(context)
-            val hasInternet = WifiUtils.hasInternetConnection(context)
-            val captive = WifiUtils.isCaptivePortal(context)
-
-            _captivePortalDetected.value = captive
-
-            _wifiStatus.value = when {
-                !connected -> "Not connected to Wi-Fi"
-                captive -> "Wi-Fi connected — sign-in required"
-                hasInternet -> "Wi-Fi connected"
-                else -> "Wi-Fi connected — no internet"
+            ProxyBridgeService.status.collect { status ->
+                _bridgeRunning.value = status == ProxyBridgeService.Status.RUNNING
+                if (status == ProxyBridgeService.Status.RUNNING) {
+                    _localAddresses.value = WifiUtils.getLocalIpAddresses()
+                }
             }
+        }
+        viewModelScope.launch {
+            ProxyBridgeService.activeConnections.collect { _activeConnections.value = it }
+        }
+        viewModelScope.launch {
+            ProxyBridgeService.lastError.collect { _lastError.value = it }
+        }
+    }
 
-            _canStartBridge.value = connected && hasInternet && !captive
+    fun refreshWifiStatus() {
+        val context = getApplication<Application>().applicationContext
+        when (val state = WifiUtils.getWifiState(context)) {
+            WifiState.Disconnected -> {
+                _statusText.value = "Not connected to Wi-Fi"
+                _captivePortalDetected.value = false
+            }
+            WifiState.NoInternet -> {
+                _statusText.value = "Wi-Fi connected — waiting for internet"
+                _captivePortalDetected.value = false
+            }
+            WifiState.CaptivePortal -> {
+                _statusText.value = "Wi-Fi connected — sign-in required"
+                _captivePortalDetected.value = true
+            }
+            is WifiState.Ready -> {
+                _statusText.value = "Wi-Fi connected and validated"
+                _captivePortalDetected.value = false
+            }
         }
     }
 
     fun openCaptivePortalLogin(context: Context) {
-        // Opens the network's own sign-in page in the browser so the user can
-        // authenticate manually. This does not bypass any authentication step.
+        // Opens a neutral URL that the OS/router redirects to the network's
+        // own sign-in page, so the user can authenticate manually. This does
+        // not attempt to skip or automate the sign-in step itself.
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://neverssl.com"))
         context.startActivity(intent)
     }
 
-    fun setBridgeActive(active: Boolean) {
-        isBridgeActive = active
-        _bridgeActive.value = active
+    fun startBridge(context: Context) {
+        context.startForegroundService(Intent(context, ProxyBridgeService::class.java))
+    }
+
+    fun stopBridge(context: Context) {
+        context.stopService(Intent(context, ProxyBridgeService::class.java))
     }
 }

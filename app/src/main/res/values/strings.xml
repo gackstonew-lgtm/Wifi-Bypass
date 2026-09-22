@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">WiFiBridgeBypass</string>
+    <string name="checking_wifi">Checking Wi-Fi status...</string>
+    <string name="open_login_page">Open Login Page</string>
+    <string name="start_bridge">Start Wi-Fi Bridge</string>
+    <string name="stop_bridge">Stop Bridge</string>
+    <string name="bridge_started">Bridge started — sharing connection via proxy</string>
+    <string name="instructions">Instructions:\n1. Connect to Wi-Fi first.\n2. If a sign-in page is required, use \'Open Login Page\'.\n3. Once verified, start the bridge.\n4. On your other device, set its proxy to this device\'s IP address and port 8080.</string>
+</resources>

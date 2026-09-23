@@ -1,0 +1,346 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:2:1-46:12
+INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:2:1-46:12
+INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:2:1-46:12
+INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:2:1-46:12
+MERGED from [androidx.databinding:viewbinding:8.1.2] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\7358ee1af34f2f0549e0afb8bd5c9f7e\transformed\viewbinding-8.1.2\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.material:material:1.9.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b590e910ea2273b00142a23258b83a4a\transformed\material-1.9.0\AndroidManifest.xml:17:1-26:12
+MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\50c79bb331cca4cf5d4b952425be520a\transformed\constraintlayout-2.1.4\AndroidManifest.xml:2:1-11:12
+MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\c4172034357279a50bf50a13d9bc7494\transformed\appcompat-resources-1.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.appcompat:appcompat:1.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b842d6b1545d693ba21a0ea66882b2da\transformed\appcompat-1.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.viewpager2:viewpager2:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\78daa60be414253adb55456a6820c9df\transformed\viewpager2-1.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.fragment:fragment:1.3.6] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\7e83164a9213bdef824991c48373c2cc\transformed\fragment-1.3.6\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.activity:activity:1.6.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\2d62374e77d272bd14433b84f086f15e\transformed\activity-1.6.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.emoji2:emoji2-views-helper:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3295bd81894a1fb5c5671115b7776b13\transformed\emoji2-views-helper-1.2.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\57e24a34dfa65160acc260923636db27\transformed\savedstate-1.2.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5aa024c040ada378a28261987166f1cc\transformed\lifecycle-livedata-core-2.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b2a3e250add7296d8a00736a14c71cbf\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\56f60aa90bc7d47d6e0fa13b87a6ef32\transformed\lifecycle-livedata-core-ktx-2.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3371a1490d637580fb29b27755d47a7f\transformed\dynamicanimation-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\e536c6deba7241722d1f9306231aac55\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\41e37f7851b4c8b8f8097a8e30de83af\transformed\loader-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\bd492c6571ee15f53bdee2d682c0ef5e\transformed\lifecycle-livedata-2.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\cb4a7d738c30f5864796a89ebf26026a\transformed\lifecycle-viewmodel-savedstate-2.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core-ktx:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f3fed328f693a25cc39d7db014ca397e\transformed\core-ktx-1.10.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\78b9a61a9cab2af1db0f9633cfa22268\transformed\drawerlayout-1.1.1\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\66df8bed0ed93363cea4d1f12217042e\transformed\coordinatorlayout-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.transition:transition:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\661eda77dfe5489b94410c612c6d68c2\transformed\transition-1.2.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\391ef3275aaa74aef4d30f1c2dd5d978\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\130648f915b0cc724c03494fd5eacb0f\transformed\vectordrawable-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f75f4e0a0f70f66ad43d3e07c1b83e6\transformed\viewpager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.recyclerview:recyclerview:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\c7f41fa8a64387bab42f76b671d8c27a\transformed\recyclerview-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.customview:customview:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\df6f13d7416931c072f584fed10a49a8\transformed\customview-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\6284996f91c265403d014616941a7c08\transformed\lifecycle-runtime-2.6.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\137a5425e5df8c299871e22299be4c75\transformed\lifecycle-viewmodel-2.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-ktx:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\9849279b4e1b3f1de573f93b4e4109b8\transformed\lifecycle-livedata-ktx-2.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f951ac18619f5cbabdb8550a27eab2a8\transformed\lifecycle-viewmodel-ktx-2.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\ce86d6b087453372608c113c1c8df7a9\transformed\cursoradapter-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.cardview:cardview:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\acfd27f0832c9ebdca4074a9595fddee\transformed\cardview-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\ecc4fe031cd60e1010d2a4fb0d845a7b\transformed\interpolator-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\9cc1857861d1191ea5ed649a92ff6fa3\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f95b754c1421d6fbb3615a426697c5cc\transformed\startup-runtime-1.1.1\AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\e484c1eb308cd58527e511204b38b61e\transformed\tracing-1.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\42904d5595b166b0e2c36ad256931e7d\transformed\core-runtime-2.2.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\9168e3133015fbfcd675b677656ef7bc\transformed\documentfile-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\367f40d48c9310b44630f6f7fcfdda85\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.print:print:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\de7f2b48806c36657cd69d540edd7849\transformed\print-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.annotation:annotation-experimental:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\ba7158d6cc4729c8b66818ff11e730a7\transformed\annotation-experimental-1.3.0\AndroidManifest.xml:17:1-22:12
+	package
+		INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml
+	xmlns:tools
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:3:5-51
+	android:versionCode
+		INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:2:11-69
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:6:5-76
+	android:name
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:6:22-73
+uses-permission#android.permission.CHANGE_WIFI_STATE
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:7:5-76
+	android:name
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:7:22-73
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:8:5-79
+	android:name
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:8:22-76
+uses-permission#android.permission.INTERNET
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:9:5-67
+	android:name
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:9:22-64
+uses-permission#android.permission.CHANGE_NETWORK_STATE
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:10:5-79
+	android:name
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:10:22-76
+uses-permission#android.permission.FOREGROUND_SERVICE
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:13:5-77
+	android:name
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:13:22-74
+uses-permission#android.permission.FOREGROUND_SERVICE_SPECIAL_USE
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:14:5-89
+	android:name
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:14:22-86
+application
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:16:5-44:19
+INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:16:5-44:19
+MERGED from [com.google.android.material:material:1.9.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b590e910ea2273b00142a23258b83a4a\transformed\material-1.9.0\AndroidManifest.xml:24:5-20
+MERGED from [com.google.android.material:material:1.9.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b590e910ea2273b00142a23258b83a4a\transformed\material-1.9.0\AndroidManifest.xml:24:5-20
+MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\50c79bb331cca4cf5d4b952425be520a\transformed\constraintlayout-2.1.4\AndroidManifest.xml:9:5-20
+MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\50c79bb331cca4cf5d4b952425be520a\transformed\constraintlayout-2.1.4\AndroidManifest.xml:9:5-20
+MERGED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b2a3e250add7296d8a00736a14c71cbf\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b2a3e250add7296d8a00736a14c71cbf\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:28:5-89
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\9cc1857861d1191ea5ed649a92ff6fa3\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\9cc1857861d1191ea5ed649a92ff6fa3\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f95b754c1421d6fbb3615a426697c5cc\transformed\startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f95b754c1421d6fbb3615a426697c5cc\transformed\startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+	android:extractNativeLibs
+		INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:28:18-86
+	android:supportsRtl
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:21:9-35
+	android:label
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:19:9-41
+	android:roundIcon
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:20:9-54
+	tools:targetApi
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:23:9-29
+	android:icon
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:18:9-43
+	android:allowBackup
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:17:9-35
+	android:theme
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:22:9-54
+activity#com.example.wifibridgebypass.MainActivity
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:25:9-32:20
+	android:exported
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:27:13-36
+	android:name
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:26:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:28:13-31:29
+action#android.intent.action.MAIN
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:29:17-69
+	android:name
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:29:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:30:17-77
+	android:name
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:30:27-74
+service#com.example.wifibridgebypass.services.ProxyBridgeService
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:35:9-43:19
+	android:enabled
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:38:13-37
+	android:foregroundServiceType
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:39:13-55
+	android:name
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:36:13-56
+property
+ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:40:13-42:48
+	android:value
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:42:17-45
+	android:name
+		ADDED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:41:17-76
+uses-sdk
+INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml
+MERGED from [androidx.databinding:viewbinding:8.1.2] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\7358ee1af34f2f0549e0afb8bd5c9f7e\transformed\viewbinding-8.1.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.databinding:viewbinding:8.1.2] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\7358ee1af34f2f0549e0afb8bd5c9f7e\transformed\viewbinding-8.1.2\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.material:material:1.9.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b590e910ea2273b00142a23258b83a4a\transformed\material-1.9.0\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.material:material:1.9.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b590e910ea2273b00142a23258b83a4a\transformed\material-1.9.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\50c79bb331cca4cf5d4b952425be520a\transformed\constraintlayout-2.1.4\AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\50c79bb331cca4cf5d4b952425be520a\transformed\constraintlayout-2.1.4\AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\c4172034357279a50bf50a13d9bc7494\transformed\appcompat-resources-1.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\c4172034357279a50bf50a13d9bc7494\transformed\appcompat-resources-1.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat:1.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b842d6b1545d693ba21a0ea66882b2da\transformed\appcompat-1.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat:1.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b842d6b1545d693ba21a0ea66882b2da\transformed\appcompat-1.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager2:viewpager2:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\78daa60be414253adb55456a6820c9df\transformed\viewpager2-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.viewpager2:viewpager2:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\78daa60be414253adb55456a6820c9df\transformed\viewpager2-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.3.6] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\7e83164a9213bdef824991c48373c2cc\transformed\fragment-1.3.6\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.3.6] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\7e83164a9213bdef824991c48373c2cc\transformed\fragment-1.3.6\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.activity:activity:1.6.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\2d62374e77d272bd14433b84f086f15e\transformed\activity-1.6.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.6.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\2d62374e77d272bd14433b84f086f15e\transformed\activity-1.6.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3295bd81894a1fb5c5671115b7776b13\transformed\emoji2-views-helper-1.2.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3295bd81894a1fb5c5671115b7776b13\transformed\emoji2-views-helper-1.2.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\57e24a34dfa65160acc260923636db27\transformed\savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\57e24a34dfa65160acc260923636db27\transformed\savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5aa024c040ada378a28261987166f1cc\transformed\lifecycle-livedata-core-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5aa024c040ada378a28261987166f1cc\transformed\lifecycle-livedata-core-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b2a3e250add7296d8a00736a14c71cbf\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b2a3e250add7296d8a00736a14c71cbf\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\56f60aa90bc7d47d6e0fa13b87a6ef32\transformed\lifecycle-livedata-core-ktx-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\56f60aa90bc7d47d6e0fa13b87a6ef32\transformed\lifecycle-livedata-core-ktx-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3371a1490d637580fb29b27755d47a7f\transformed\dynamicanimation-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3371a1490d637580fb29b27755d47a7f\transformed\dynamicanimation-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\e536c6deba7241722d1f9306231aac55\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\e536c6deba7241722d1f9306231aac55\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\41e37f7851b4c8b8f8097a8e30de83af\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\41e37f7851b4c8b8f8097a8e30de83af\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\bd492c6571ee15f53bdee2d682c0ef5e\transformed\lifecycle-livedata-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\bd492c6571ee15f53bdee2d682c0ef5e\transformed\lifecycle-livedata-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\cb4a7d738c30f5864796a89ebf26026a\transformed\lifecycle-viewmodel-savedstate-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\cb4a7d738c30f5864796a89ebf26026a\transformed\lifecycle-viewmodel-savedstate-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core-ktx:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f3fed328f693a25cc39d7db014ca397e\transformed\core-ktx-1.10.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f3fed328f693a25cc39d7db014ca397e\transformed\core-ktx-1.10.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\78b9a61a9cab2af1db0f9633cfa22268\transformed\drawerlayout-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.drawerlayout:drawerlayout:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\78b9a61a9cab2af1db0f9633cfa22268\transformed\drawerlayout-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\66df8bed0ed93363cea4d1f12217042e\transformed\coordinatorlayout-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\66df8bed0ed93363cea4d1f12217042e\transformed\coordinatorlayout-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.transition:transition:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\661eda77dfe5489b94410c612c6d68c2\transformed\transition-1.2.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.transition:transition:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\661eda77dfe5489b94410c612c6d68c2\transformed\transition-1.2.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\391ef3275aaa74aef4d30f1c2dd5d978\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\391ef3275aaa74aef4d30f1c2dd5d978\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\130648f915b0cc724c03494fd5eacb0f\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\130648f915b0cc724c03494fd5eacb0f\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f75f4e0a0f70f66ad43d3e07c1b83e6\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f75f4e0a0f70f66ad43d3e07c1b83e6\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.recyclerview:recyclerview:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\c7f41fa8a64387bab42f76b671d8c27a\transformed\recyclerview-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.recyclerview:recyclerview:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\c7f41fa8a64387bab42f76b671d8c27a\transformed\recyclerview-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.customview:customview:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\df6f13d7416931c072f584fed10a49a8\transformed\customview-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.customview:customview:1.1.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\df6f13d7416931c072f584fed10a49a8\transformed\customview-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\6284996f91c265403d014616941a7c08\transformed\lifecycle-runtime-2.6.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\6284996f91c265403d014616941a7c08\transformed\lifecycle-runtime-2.6.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\137a5425e5df8c299871e22299be4c75\transformed\lifecycle-viewmodel-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\137a5425e5df8c299871e22299be4c75\transformed\lifecycle-viewmodel-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-ktx:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\9849279b4e1b3f1de573f93b4e4109b8\transformed\lifecycle-livedata-ktx-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-ktx:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\9849279b4e1b3f1de573f93b4e4109b8\transformed\lifecycle-livedata-ktx-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f951ac18619f5cbabdb8550a27eab2a8\transformed\lifecycle-viewmodel-ktx-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f951ac18619f5cbabdb8550a27eab2a8\transformed\lifecycle-viewmodel-ktx-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\ce86d6b087453372608c113c1c8df7a9\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\ce86d6b087453372608c113c1c8df7a9\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cardview:cardview:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\acfd27f0832c9ebdca4074a9595fddee\transformed\cardview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cardview:cardview:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\acfd27f0832c9ebdca4074a9595fddee\transformed\cardview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\ecc4fe031cd60e1010d2a4fb0d845a7b\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\ecc4fe031cd60e1010d2a4fb0d845a7b\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\9cc1857861d1191ea5ed649a92ff6fa3\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\9cc1857861d1191ea5ed649a92ff6fa3\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f95b754c1421d6fbb3615a426697c5cc\transformed\startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f95b754c1421d6fbb3615a426697c5cc\transformed\startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\e484c1eb308cd58527e511204b38b61e\transformed\tracing-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\e484c1eb308cd58527e511204b38b61e\transformed\tracing-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\42904d5595b166b0e2c36ad256931e7d\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\42904d5595b166b0e2c36ad256931e7d\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\9168e3133015fbfcd675b677656ef7bc\transformed\documentfile-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\9168e3133015fbfcd675b677656ef7bc\transformed\documentfile-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\367f40d48c9310b44630f6f7fcfdda85\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\367f40d48c9310b44630f6f7fcfdda85\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\de7f2b48806c36657cd69d540edd7849\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\de7f2b48806c36657cd69d540edd7849\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\ba7158d6cc4729c8b66818ff11e730a7\transformed\annotation-experimental-1.3.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\ba7158d6cc4729c8b66818ff11e730a7\transformed\annotation-experimental-1.3.0\AndroidManifest.xml:20:5-44
+	android:targetSdkVersion
+		INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b2a3e250add7296d8a00736a14c71cbf\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b2a3e250add7296d8a00736a14c71cbf\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f95b754c1421d6fbb3615a426697c5cc\transformed\startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\f95b754c1421d6fbb3615a426697c5cc\transformed\startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\3f8790650a83a8289b1e0aef4fce70a2\transformed\emoji2-1.2.0\AndroidManifest.xml:30:17-75
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b2a3e250add7296d8a00736a14c71cbf\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b2a3e250add7296d8a00736a14c71cbf\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\b2a3e250add7296d8a00736a14c71cbf\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:30:17-78
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:23:9-81
+permission#com.example.wifibridgebypass.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:26:22-94
+uses-permission#com.example.wifibridgebypass.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\36b46477e678fedfc437872a800d07bb\transformed\core-1.10.1\AndroidManifest.xml:26:22-94
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\transforms-3\5f9dc650996356cfb45a2a647253e186\transformed\profileinstaller-1.3.0\AndroidManifest.xml:50:25-92

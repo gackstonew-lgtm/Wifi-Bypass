@@ -1,15 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WiFiBridgeBypass</string>
-    <string name="checking_wifi">Checking Wi-Fi status…</string>
-    <string name="open_login_page">Open Wi-Fi Sign-In Page</string>
-    <string name="step1_hotspot">Step 1: Turn on your phone\'s Mobile Hotspot (Android restricts apps from doing this automatically) and connect your other device to it.</string>
-    <string name="open_hotspot_settings">Open Hotspot Settings</string>
-    <string name="start_bridge">Start Wi-Fi Bridge</string>
+    <string name="app_name">Wi-Fi Bridge (SOCKS5)</string>
+    <string name="dashboard_title">Authenticated Network Bridge</string>
+    <string name="dashboard_subtitle">Galaxy Note 8 / Multi-Network SOCKS5 Relay</string>
+
+    <!-- Upstream Card -->
+    <string name="upstream_title">Upstream Network (STA)</string>
+    <string name="status_wifi_authenticated">Wi-Fi Authenticated</string>
+    <string name="status_wifi_portal">Captive Portal Sign-In Required</string>
+    <string name="status_wifi_no_internet">Wi-Fi Connected (No Internet)</string>
+    <string name="status_wifi_disconnected">Wi-Fi Disconnected</string>
+    <string name="open_sign_in_page">Open Sign-In Portal</string>
+
+    <!-- Downstream Card -->
+    <string name="downstream_title">Downstream Distribution (LAN)</string>
+    <string name="status_hotspot_active">Hotspot Active</string>
+    <string name="status_usb_active">USB Tethering Active</string>
+    <string name="status_downstream_inactive">No Hotspot / USB Detected</string>
+    <string name="open_hotspot_settings">Hotspot Settings</string>
+    <string name="open_usb_settings">USB Tether Settings</string>
+
+    <!-- Proxy Status Card -->
+    <string name="proxy_title">SOCKS5 Proxy Bridge Server</string>
+    <string name="proxy_status_running">Running</string>
+    <string name="proxy_status_stopped">Stopped</string>
+    <string name="proxy_status_waiting">Waiting for Valid Wi-Fi</string>
+    <string name="proxy_status_error">Error</string>
+    <string name="start_bridge">Start SOCKS5 Bridge</string>
     <string name="stop_bridge">Stop Bridge</string>
-    <string name="bridge_starting">Starting bridge…</string>
-    <string name="active_connections_zero">Active connections: 0</string>
-    <string name="active_connections">Active connections: %1$d</string>
-    <string name="address_placeholder">Bridge address will appear here once running</string>
-    <string name="address_prefix">Point your other device\'s SOCKS5 proxy at port 1080 on:</string>
-    <string name="instructions">Instructions:\n1. Connect this phone to Wi-Fi and complete sign-in if prompted.\n2. Turn on this phone\'s Mobile Hotspot and connect your other device to it.\n3. Tap \'Start Wi-Fi Bridge\'.\n4. On your other device, set its SOCKS5 proxy to this phone\'s hotspot IP address (shown above) on port 1080.\n5. The bridge automatically stops if this phone\'s Wi-Fi disconnects or becomes invalid.</string>
+    <string name="active_connections_format">Active Connections: %1$d</string>
+    <string name="traffic_metrics_format">Tx: %1$s | Rx: %2$s</string>
+    <string name="listening_on_format">Listening on: %1$s:%2$d</string>
+
+    <!-- Test Connection Card -->
+    <string name="diagnostics_title">Upstream Binding Diagnostics</string>
+    <string name="test_connection_button">Test Upstream Network Bind</string>
+    <string name="testing_connection">Binding test socket to Wi-Fi...</string>
+    <string name="test_idle_hint">Verify outbound socket binding &amp; internet connectivity.</string>
+
+    <!-- Instructions Card -->
+    <string name="instructions_title">Client Setup (Laptop / PC)</string>
+    <string name="instructions_content">1. Connect this phone to the captive Wi-Fi and complete payment / login.\n2. Turn on Mobile Hotspot (or enable USB Tethering) on this phone.\n3. Connect your laptop to the phone\'s Hotspot or USB.\n4. Start the SOCKS5 Bridge above.\n5. On your laptop, configure SOCKS5 Proxy Host to the phone\'s IP (shown above) and Port 1080.\n\nAll traffic is cleanly bound to the phone\'s authenticated Wi-Fi session via Network.bindSocket() without triggering Radius tethering blocks.</string>
 </resources>

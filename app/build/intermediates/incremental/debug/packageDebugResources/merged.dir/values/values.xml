@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="http://schemas.android.com/tools">
+    <color name="background_light">#F8F9FA</color>
+    <color name="black">#FF000000</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="card_border">#E0E0E0</color>
+    <color name="code_background">#2D3748</color>
+    <color name="code_text">#E2E8F0</color>
+    <color name="primary">#1A73E8</color>
+    <color name="primary_dark">#1557B0</color>
+    <color name="primary_variant">#E8F0FE</color>
+    <color name="purple_500">#1A73E8</color>
+    <color name="purple_700">#1557B0</color>
+    <color name="status_green">#1E8E3E</color>
+    <color name="status_green_light">#E6F4EA</color>
+    <color name="status_orange">#E37400</color>
+    <color name="status_orange_light">#FEF7E0</color>
+    <color name="status_red">#D93025</color>
+    <color name="status_red_light">#FCE8E6</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="teal_700">#018786</color>
+    <color name="text_primary">#202124</color>
+    <color name="text_secondary">#5F6368</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="active_connections_format">Active Connections: %1$d</string>
+    <string name="app_name">Wi-Fi Bridge (SOCKS5)</string>
+    <string name="dashboard_subtitle">Galaxy Note 8 / Multi-Network SOCKS5 Relay</string>
+    <string name="dashboard_title">Authenticated Network Bridge</string>
+    <string name="diagnostics_title">Upstream Binding Diagnostics</string>
+    <string name="downstream_title">Downstream Distribution (LAN)</string>
+    <string name="instructions_content">1. Connect this phone to the captive Wi-Fi and complete payment / login.\n2. Turn on Mobile Hotspot (or enable USB Tethering) on this phone.\n3. Connect your laptop to the phone\'s Hotspot or USB.\n4. Start the SOCKS5 Bridge above.\n5. On your laptop, configure SOCKS5 Proxy Host to the phone\'s IP (shown above) and Port 1080.\n\nAll traffic is cleanly bound to the phone\'s authenticated Wi-Fi session via Network.bindSocket() without triggering Radius tethering blocks.</string>
+    <string name="instructions_title">Client Setup (Laptop / PC)</string>
+    <string name="listening_on_format">Listening on: %1$s:%2$d</string>
+    <string name="open_hotspot_settings">Hotspot Settings</string>
+    <string name="open_sign_in_page">Open Sign-In Portal</string>
+    <string name="open_usb_settings">USB Tether Settings</string>
+    <string name="proxy_status_error">Error</string>
+    <string name="proxy_status_running">Running</string>
+    <string name="proxy_status_stopped">Stopped</string>
+    <string name="proxy_status_waiting">Waiting for Valid Wi-Fi</string>
+    <string name="proxy_title">SOCKS5 Proxy Bridge Server</string>
+    <string name="start_bridge">Start SOCKS5 Bridge</string>
+    <string name="status_downstream_inactive">No Hotspot / USB Detected</string>
+    <string name="status_hotspot_active">Hotspot Active</string>
+    <string name="status_usb_active">USB Tethering Active</string>
+    <string name="status_wifi_authenticated">Wi-Fi Authenticated</string>
+    <string name="status_wifi_disconnected">Wi-Fi Disconnected</string>
+    <string name="status_wifi_no_internet">Wi-Fi Connected (No Internet)</string>
+    <string name="status_wifi_portal">Captive Portal Sign-In Required</string>
+    <string name="stop_bridge">Stop Bridge</string>
+    <string name="test_connection_button">Test Upstream Network Bind</string>
+    <string name="test_idle_hint">Verify outbound socket binding &amp; internet connectivity.</string>
+    <string name="testing_connection">Binding test socket to Wi-Fi...</string>
+    <string name="traffic_metrics_format">Tx: %1$s | Rx: %2$s</string>
+    <string name="upstream_title">Upstream Network (STA)</string>
+    <style name="Theme.WiFiBridgeBypass" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:statusBarColor" ns1:targetApi="l">?attr/colorPrimaryVariant</item>
+    </style>
+</resources>

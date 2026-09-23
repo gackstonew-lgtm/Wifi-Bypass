@@ -10,8 +10,8 @@ import android.net.Network
 import android.os.IBinder
 import android.util.Log
 import com.example.wifibridgebypass.MainActivity
-import com.example.wifibridgebypass.utils.WifiState
-import com.example.wifibridgebypass.utils.WifiUtils
+import com.example.wifibridgebypass.utils.NetworkManager
+import com.example.wifibridgebypass.utils.UpstreamWifiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -23,11 +23,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.ServerSocket
@@ -37,437 +35,542 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 
 /**
- * Local SOCKS5 relay. Devices that connect to this phone's hotspot / USB
- * tether can point their SOCKS5 client at this device's LAN IP on
- * [PROXY_PORT] and have their TCP traffic relayed out over this device's
- * already-connected Wi-Fi network — the same thing native Wi-Fi tethering
- * does, implemented in the app layer for devices where native Wi-Fi
- * tethering isn't available.
+ * ProxyBridgeService implements a high-performance, concurrent RFC 1928 SOCKS5 Proxy Server.
  *
- * Every outbound connection is explicitly bound to the active Wi-Fi
- * [Network] via [Network.bindSocket] so traffic can never silently fall
- * back to cellular data. If Wi-Fi becomes unvalidated, loses internet, or a
- * captive portal reappears, the service tears down every open connection
- * and stops itself.
+ * It bridges downstream devices (such as a laptop connected via local Hotspot or USB Tethering)
+ * to the phone's authenticated Wi-Fi connection.
+ *
+ * HOW IT CIRCUMVENTS ISP RADIUS / TETHERING RESTRICTIONS:
+ * 1. Traditional tethering relies on Linux kernel IP packet routing and NAT (Network Address Translation).
+ *    This decrements the IP TTL (Hop Limit) header by 1 and produces OS TCP window signatures that the
+ *    upstream Radius firewall or Deep Packet Inspection (DPI) flags as unauthorized tethering.
+ * 2. In this architecture, all incoming TCP connections from the laptop terminate at this SOCKS5 service.
+ * 3. The service then instantiates a native outbound Java Socket and explicitly binds it to the
+ *    authenticated Wi-Fi Network handle using `Network.bindSocket()`.
+ * 4. As a result, all outbound packets originate natively from the Android OS user space with the
+ *    device's valid authenticated IP, legitimate MAC, standard Android TTL (64), and genuine TCP stack
+ *    characteristics. The ISP Radius billing system processes these packets as standard single-device usage.
  */
 class ProxyBridgeService : Service() {
 
-    enum class Status { STOPPED, WAITING_FOR_WIFI, RUNNING, ERROR }
+    enum class BridgeStatus {
+        STOPPED,
+        WAITING_FOR_WIFI,
+        RUNNING,
+        ERROR
+    }
 
     companion object {
         const val PROXY_PORT = 1080
-        const val CHANNEL_ID = "ProxyBridgeChannel"
-        const val NOTIFICATION_ID = 1
+        const val CHANNEL_ID = "ProxyBridgeNotificationChannel"
+        const val NOTIFICATION_ID = 1001
 
-        private const val TAG = "ProxyBridge"
+        private const val TAG = "ProxyBridgeService"
+
+        // RFC 1928 SOCKS Protocol Constants
         private const val SOCKS_VERSION = 0x05
+        private const val AUTH_NO_AUTH = 0x00
+        private const val AUTH_NO_ACCEPTABLE = 0xFF
+
         private const val CMD_CONNECT = 0x01
+        private const val CMD_BIND = 0x02
+        private const val CMD_UDP_ASSOCIATE = 0x03
+
         private const val ATYP_IPV4 = 0x01
         private const val ATYP_DOMAIN = 0x03
         private const val ATYP_IPV6 = 0x04
-        private const val CONNECT_TIMEOUT_MS = 10_000
-        private const val HANDSHAKE_TIMEOUT_MS = 8_000
 
-        // Reply codes (RFC 1928 section 6)
+        // SOCKS5 Response Codes (RFC 1928 Section 6)
         private const val REP_SUCCEEDED = 0x00
         private const val REP_GENERAL_FAILURE = 0x01
+        private const val REP_CONN_NOT_ALLOWED = 0x02
         private const val REP_NETWORK_UNREACHABLE = 0x03
         private const val REP_HOST_UNREACHABLE = 0x04
         private const val REP_CONN_REFUSED = 0x05
+        private const val REP_TTL_EXPIRED = 0x06
         private const val REP_COMMAND_NOT_SUPPORTED = 0x07
         private const val REP_ATYP_NOT_SUPPORTED = 0x08
 
-        private val _status = MutableStateFlow(Status.STOPPED)
-        val status: StateFlow<Status> = _status.asStateFlow()
+        private const val HANDSHAKE_TIMEOUT_MS = 10_000
+        private const val CONNECT_TIMEOUT_MS = 12_000
+        private const val BUFFER_SIZE = 16 * 1024 // 16KB high throughput buffer
+
+        // Observables for UI & ViewModel
+        private val _status = MutableStateFlow(BridgeStatus.STOPPED)
+        val status: StateFlow<BridgeStatus> = _status.asStateFlow()
 
         private val _activeConnections = MutableStateFlow(0)
         val activeConnections: StateFlow<Int> = _activeConnections.asStateFlow()
 
+        private val _bytesTransferredTx = MutableStateFlow(0L)
+        val bytesTransferredTx: StateFlow<Long> = _bytesTransferredTx.asStateFlow()
+
+        private val _bytesTransferredRx = MutableStateFlow(0L)
+        val bytesTransferredRx: StateFlow<Long> = _bytesTransferredRx.asStateFlow()
+
         private val _lastError = MutableStateFlow<String?>(null)
         val lastError: StateFlow<String?> = _lastError.asStateFlow()
+
+        private val _boundWifiIp = MutableStateFlow<String?>(null)
+        val boundWifiIp: StateFlow<String?> = _boundWifiIp.asStateFlow()
     }
 
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private lateinit var networkManager: NetworkManager
+
     private var serverJob: Job? = null
-    private var wifiWatcherJob: Job? = null
+    private var networkWatcherJob: Job? = null
     private var serverSocket: ServerSocket? = null
 
-    // Tracks live client sockets so we can force-close everything if Wi-Fi drops.
+    // Set of active sockets to ensure clean teardown if upstream Wi-Fi drops
     private val activeSockets = ConcurrentHashMap.newKeySet<Socket>()
     private val connectionCounter = AtomicLong(0)
+    private val totalTx = AtomicLong(0)
+    private val totalRx = AtomicLong(0)
 
     override fun onCreate() {
         super.onCreate()
+        networkManager = NetworkManager.getInstance(applicationContext)
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, buildNotification("Starting…"))
-        watchWifiState()
+        startForeground(NOTIFICATION_ID, buildNotification("Initializing Legitimate SOCKS5 Bridge..."))
+        startNetworkWatcher()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.i(TAG, "ProxyBridgeService onStartCommand received")
+        return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        shutdownProxy("Service destroyed")
-        wifiWatcherJob?.cancel()
+        Log.i(TAG, "ProxyBridgeService destroying")
+        shutdownServer("Service destroyed")
+        networkWatcherJob?.cancel()
         serviceScope.cancel()
-        _status.value = Status.STOPPED
+        _status.value = BridgeStatus.STOPPED
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    // ------------------------------------------------------------------
-    // Wi-Fi lifecycle
-    // ------------------------------------------------------------------
-
-    private fun watchWifiState() {
-        wifiWatcherJob = serviceScope.launch {
-            WifiUtils.observeWifiState(applicationContext).collect { state ->
-                when (state) {
-                    is WifiState.Ready -> {
+    /**
+     * Observes upstream Wi-Fi connectivity. If Wi-Fi becomes authenticated, the proxy is launched.
+     * If Wi-Fi drops or a captive portal prompt returns, active connections are immediately severed.
+     */
+    private fun startNetworkWatcher() {
+        networkWatcherJob = serviceScope.launch {
+            networkManager.observeUpstreamWifi().collect { wifiState ->
+                when (wifiState) {
+                    is UpstreamWifiState.Authenticated -> {
+                        _boundWifiIp.value = wifiState.ipAddress
                         if (serverJob == null) {
-                            startProxyServer(state.network)
+                            Log.i(TAG, "Authenticated Wi-Fi available (${wifiState.ipAddress}). Starting SOCKS5 server...")
+                            startServer(wifiState.network)
                         }
                     }
-                    WifiState.Disconnected, WifiState.NoInternet, WifiState.CaptivePortal -> {
-                        if (serverJob != null) {
-                            Log.i(TAG, "Wi-Fi no longer valid (${state::class.simpleName}); stopping proxy")
-                            shutdownProxy("Wi-Fi disconnected or invalid")
-                        }
-                        _status.value = Status.WAITING_FOR_WIFI
-                        updateNotification(
-                            when (state) {
-                                WifiState.CaptivePortal -> "Waiting for Wi-Fi sign-in to complete"
-                                WifiState.NoInternet -> "Wi-Fi connected, no internet yet"
-                                else -> "Waiting for Wi-Fi connection"
-                            }
-                        )
+                    is UpstreamWifiState.CaptivePortalDetected -> {
+                        Log.w(TAG, "Captive portal detected! Stopping proxy server until authentication is completed.")
+                        shutdownServer("Captive portal sign-in required")
+                        _status.value = BridgeStatus.WAITING_FOR_WIFI
+                        updateNotification("Waiting for captive portal authentication...")
+                    }
+                    is UpstreamWifiState.ConnectedNoInternet -> {
+                        Log.w(TAG, "Wi-Fi connected but no internet access verified.")
+                        shutdownServer("Wi-Fi has no internet")
+                        _status.value = BridgeStatus.WAITING_FOR_WIFI
+                        updateNotification("Wi-Fi connected — verifying upstream internet...")
+                    }
+                    is UpstreamWifiState.Disconnected -> {
+                        Log.w(TAG, "Wi-Fi disconnected. Halting proxy bridge.")
+                        shutdownServer("Wi-Fi disconnected")
+                        _status.value = BridgeStatus.WAITING_FOR_WIFI
+                        updateNotification("Waiting for Wi-Fi connection...")
                     }
                 }
-            }
-        }
-    }
-
-    // ------------------------------------------------------------------
-    // Server accept loop
-    // ------------------------------------------------------------------
-
-    private fun startProxyServer(network: Network) {
-        serverJob = serviceScope.launch {
-            try {
-                val socket = ServerSocket(PROXY_PORT)
-                serverSocket = socket
-                _status.value = Status.RUNNING
-                _lastError.value = null
-                updateNotification("Bridge active — relaying via Wi-Fi on port $PROXY_PORT")
-                Log.i(TAG, "SOCKS5 proxy listening on port $PROXY_PORT")
-
-                while (isActive) {
-                    val client = try {
-                        socket.accept()
-                    } catch (e: IOException) {
-                        if (isActive) Log.e(TAG, "accept() failed: ${e.message}")
-                        break
-                    }
-
-                    if (!isLocalNetworkPeer(client)) {
-                        Log.w(TAG, "Rejecting connection from non-local peer ${client.inetAddress}")
-                        client.closeQuietly()
-                        continue
-                    }
-
-                    // Re-check Wi-Fi is still ready for every new connection; the
-                    // network handle can change (e.g. Wi-Fi reconnects) between
-                    // accepts.
-                    val currentNetwork = WifiUtils.getReadyWifiNetwork(applicationContext)
-                    if (currentNetwork == null) {
-                        Log.w(TAG, "No validated Wi-Fi network available; refusing new client")
-                        client.closeQuietly()
-                        continue
-                    }
-
-                    val id = connectionCounter.incrementAndGet()
-                    activeSockets.add(client)
-                    _activeConnections.value = activeSockets.size
-                    launch {
-                        try {
-                            handleClient(id, client, currentNetwork)
-                        } finally {
-                            activeSockets.remove(client)
-                            _activeConnections.value = activeSockets.size
-                        }
-                    }
-                }
-            } catch (e: IOException) {
-                Log.e(TAG, "Failed to bind proxy server on port $PROXY_PORT", e)
-                _lastError.value = "Could not start proxy: ${e.message}"
-                _status.value = Status.ERROR
-                updateNotification("Bridge failed to start: ${e.message}")
             }
         }
     }
 
     /**
-     * Only local/LAN peers may use the proxy (loopback + the private ranges
-     * used by Android hotspot / USB tethering / Wi-Fi Direct). This keeps
-     * the relay from being reachable by anyone outside the phone's own
-     * local network.
+     * Spawns the SOCKS5 ServerSocket listening on PROXY_PORT.
      */
-    private fun isLocalNetworkPeer(socket: Socket): Boolean {
-        val addr = socket.inetAddress ?: return false
-        if (addr.isLoopbackAddress || addr.isLinkLocalAddress) return true
-        val bytes = addr.address
-        if (bytes.size != 4) return false // only allow IPv4 LAN peers
-        val a = bytes[0].toInt() and 0xFF
-        val b = bytes[1].toInt() and 0xFF
-        return when (a) {
-            10 -> true
-            172 -> b in 16..31
-            192 -> b == 168
-            else -> false
-        }
-    }
-
-    // ------------------------------------------------------------------
-    // SOCKS5 per-connection handling
-    // ------------------------------------------------------------------
-
-    private suspend fun handleClient(id: Long, client: Socket, network: Network) {
-        client.use { socket ->
+    private fun startServer(network: Network) {
+        serverJob = serviceScope.launch {
             try {
-                socket.soTimeout = HANDSHAKE_TIMEOUT_MS
-                val input = socket.getInputStream()
-                val output = socket.getOutputStream()
+                // Binding to 0.0.0.0:1080 allows accepting clients from Hotspot (192.168.43.1),
+                // USB Tethering (192.168.42.129), or local loopback.
+                val socket = ServerSocket()
+                socket.reuseAddress = true
+                socket.bind(InetSocketAddress("0.0.0.0", PROXY_PORT))
+                serverSocket = socket
 
-                if (!performGreeting(id, input, output)) return
-                val target = readConnectRequest(id, input, output) ?: return
+                _status.value = BridgeStatus.RUNNING
+                _lastError.value = null
+                updateNotification("SOCKS5 Bridge Active on port $PROXY_PORT (Relaying via Wi-Fi)")
+                Log.i(TAG, "SOCKS5 Proxy server successfully listening on 0.0.0.0:$PROXY_PORT")
 
-                Log.i(TAG, "[$id] CONNECT request for ${target.host}:${target.port}")
+                while (isActive) {
+                    val clientSocket = try {
+                        socket.accept()
+                    } catch (e: IOException) {
+                        if (isActive) Log.e(TAG, "ServerSocket.accept() exception: ${e.message}")
+                        break
+                    }
 
-                val outbound = try {
-                    connectViaWifi(network, target.host, target.port)
-                } catch (e: SocketTimeoutException) {
-                    Log.e(TAG, "[$id] Connect timed out: ${target.host}:${target.port}")
-                    sendReply(output, REP_HOST_UNREACHABLE)
-                    return
-                } catch (e: IOException) {
-                    Log.e(TAG, "[$id] Connect failed: ${e.message}")
-                    sendReply(output, REP_NETWORK_UNREACHABLE)
-                    return
-                }
+                    // Security: Verify that the incoming peer is on a local/private subnet
+                    if (!isPrivateOrLocalAddress(clientSocket.inetAddress)) {
+                        Log.w(TAG, "Unauthorized non-private connection attempt from ${clientSocket.inetAddress}")
+                        clientSocket.closeQuietly()
+                        continue
+                    }
 
-                outbound.use { targetSocket ->
-                    activeSockets.add(targetSocket)
-                    try {
-                        sendReply(output, REP_SUCCEEDED)
-                        socket.soTimeout = 0 // no timeout once relaying
-                        Log.i(TAG, "[$id] Tunnel established, relaying")
-                        pipeBidirectionally(id, socket, targetSocket)
-                    } finally {
-                        activeSockets.remove(targetSocket)
+                    // Verify upstream Wi-Fi network is still valid
+                    val currentNetwork = networkManager.getAuthenticatedWifiNetwork()
+                    if (currentNetwork == null) {
+                        Log.w(TAG, "Upstream Wi-Fi network lost; rejecting incoming client")
+                        clientSocket.closeQuietly()
+                        continue
+                    }
+
+                    val connId = connectionCounter.incrementAndGet()
+                    activeSockets.add(clientSocket)
+                    _activeConnections.value = activeSockets.size
+
+                    launch {
+                        try {
+                            handleSocksClient(connId, clientSocket, currentNetwork)
+                        } finally {
+                            activeSockets.remove(clientSocket)
+                            _activeConnections.value = activeSockets.size
+                        }
                     }
                 }
-            } catch (e: SocketTimeoutException) {
-                Log.w(TAG, "[$id] Handshake timed out")
             } catch (e: IOException) {
-                Log.w(TAG, "[$id] Client connection error: ${e.message}")
-            } catch (e: Exception) {
-                Log.e(TAG, "[$id] Unexpected error handling client", e)
-            } finally {
-                Log.i(TAG, "[$id] Connection closed")
+                Log.e(TAG, "Fatal error starting SOCKS5 server on port $PROXY_PORT", e)
+                _lastError.value = "Failed to bind SOCKS5 server: ${e.message}"
+                _status.value = BridgeStatus.ERROR
+                updateNotification("Bridge Error: ${e.message}")
             }
         }
     }
 
-    private fun performGreeting(id: Long, input: InputStream, output: OutputStream): Boolean {
-        val ver = input.read()
-        if (ver != SOCKS_VERSION) {
-            Log.w(TAG, "[$id] Unsupported SOCKS version: $ver")
+    /**
+     * Handles the complete RFC 1928 SOCKS5 handshake and connection tunneling for a client.
+     */
+    private suspend fun handleSocksClient(connId: Long, clientSocket: Socket, upstreamNetwork: Network) {
+        clientSocket.use { client ->
+            try {
+                client.soTimeout = HANDSHAKE_TIMEOUT_MS
+                val clientIn = client.getInputStream()
+                val clientOut = client.getOutputStream()
+
+                // Step 1: Authentication Negotiation Handshake
+                if (!negotiateAuthentication(connId, clientIn, clientOut)) {
+                    return
+                }
+
+                // Step 2: Read Client Connection Request
+                val request = readSocksRequest(connId, clientIn, clientOut) ?: return
+
+                Log.i(TAG, "[$connId] SOCKS5 Request: CONNECT to ${request.host}:${request.port}")
+
+                // Step 3: Establish Outbound Upstream Socket with Explicit Wi-Fi Binding
+                val outboundSocket = try {
+                    connectOutboundViaWifi(upstreamNetwork, request.host, request.port)
+                } catch (e: SocketTimeoutException) {
+                    Log.w(TAG, "[$connId] Outbound connection to ${request.host}:${request.port} timed out")
+                    sendSocksReply(clientOut, REP_HOST_UNREACHABLE)
+                    return
+                } catch (e: IOException) {
+                    Log.w(TAG, "[$connId] Outbound connection failed: ${e.message}")
+                    sendSocksReply(clientOut, REP_NETWORK_UNREACHABLE)
+                    return
+                }
+
+                outboundSocket.use { target ->
+                    activeSockets.add(target)
+                    try {
+                        // Inform client that tunnel is established
+                        sendSocksReply(clientOut, REP_SUCCEEDED, target.localAddress, target.localPort)
+                        client.soTimeout = 0 // Remove timeout for active streaming
+                        target.soTimeout = 0
+
+                        Log.i(TAG, "[$connId] SOCKS5 tunnel established successfully to ${request.host}:${request.port}")
+
+                        // Step 4: Bidirectional Data Pipe
+                        relayStreams(connId, client, target)
+                    } finally {
+                        activeSockets.remove(target)
+                    }
+                }
+            } catch (e: SocketTimeoutException) {
+                Log.w(TAG, "[$connId] SOCKS5 Handshake timed out")
+            } catch (e: IOException) {
+                Log.w(TAG, "[$connId] Client connection reset/closed: ${e.message}")
+            } catch (e: Exception) {
+                Log.e(TAG, "[$connId] Unexpected error during client relay", e)
+            } finally {
+                Log.i(TAG, "[$connId] Connection completed and closed")
+            }
+        }
+    }
+
+    /**
+     * Performs SOCKS5 authentication method negotiation (RFC 1928 Section 3).
+     */
+    private fun negotiateAuthentication(connId: Long, input: InputStream, output: OutputStream): Boolean {
+        val version = input.read()
+        if (version != SOCKS_VERSION) {
+            Log.w(TAG, "[$connId] Unsupported SOCKS version: $version (expected 5)")
             return false
         }
-        val nMethods = input.read()
-        if (nMethods < 0) return false
-        val methods = ByteArray(nMethods)
-        readFully(input, methods)
-        // We only offer "no authentication required" (0x00). A production
-        // deployment that needs per-user access control should advertise
-        // and implement username/password auth (0x02) here instead.
-        output.write(byteArrayOf(SOCKS_VERSION.toByte(), 0x00))
+
+        val numMethods = input.read()
+        if (numMethods <= 0) return false
+
+        val methods = ByteArray(numMethods)
+        readExact(input, methods)
+
+        // Check if "No Authentication" (0x00) is supported by the client
+        val supportsNoAuth = methods.any { it.toInt() == AUTH_NO_AUTH }
+        if (!supportsNoAuth) {
+            Log.w(TAG, "[$connId] Client did not offer NO_AUTH method")
+            output.write(byteArrayOf(SOCKS_VERSION.toByte(), AUTH_NO_ACCEPTABLE.toByte()))
+            output.flush()
+            return false
+        }
+
+        // Accept NO_AUTH
+        output.write(byteArrayOf(SOCKS_VERSION.toByte(), AUTH_NO_AUTH.toByte()))
         output.flush()
         return true
     }
 
-    private data class Target(val host: String, val port: Int)
+    private data class SocksRequest(val host: String, val port: Int)
 
-    private fun readConnectRequest(id: Long, input: InputStream, output: OutputStream): Target? {
-        val ver = input.read()
+    /**
+     * Parses the SOCKS5 Command Request (RFC 1928 Section 4).
+     */
+    private fun readSocksRequest(connId: Long, input: InputStream, output: OutputStream): SocksRequest? {
+        val version = input.read()
         val cmd = input.read()
-        input.read() // RSV, always 0x00
+        input.read() // RSV (Reserved, must be 0x00)
         val atyp = input.read()
 
-        if (ver != SOCKS_VERSION) {
-            Log.w(TAG, "[$id] Bad request version: $ver")
+        if (version != SOCKS_VERSION) {
+            Log.w(TAG, "[$connId] Invalid request version: $version")
             return null
         }
+
         if (cmd != CMD_CONNECT) {
-            Log.w(TAG, "[$id] Unsupported SOCKS command: $cmd")
-            sendReply(output, REP_COMMAND_NOT_SUPPORTED)
+            Log.w(TAG, "[$connId] Unsupported command: $cmd (only CONNECT 0x01 is supported)")
+            sendSocksReply(output, REP_COMMAND_NOT_SUPPORTED)
             return null
         }
 
         val host: String = when (atyp) {
             ATYP_IPV4 -> {
-                val addr = ByteArray(4)
-                readFully(input, addr)
-                InetAddress.getByAddress(addr).hostAddress
+                val ipBytes = ByteArray(4)
+                readExact(input, ipBytes)
+                InetAddress.getByAddress(ipBytes).hostAddress ?: return null
             }
             ATYP_DOMAIN -> {
-                val len = input.read()
-                val nameBytes = ByteArray(len)
-                readFully(input, nameBytes)
-                String(nameBytes, Charsets.US_ASCII)
+                val length = input.read()
+                if (length <= 0) return null
+                val domainBytes = ByteArray(length)
+                readExact(input, domainBytes)
+                String(domainBytes, Charsets.US_ASCII)
             }
             ATYP_IPV6 -> {
-                val addr = ByteArray(16)
-                readFully(input, addr)
-                InetAddress.getByAddress(addr).hostAddress
+                val ipBytes = ByteArray(16)
+                readExact(input, ipBytes)
+                InetAddress.getByAddress(ipBytes).hostAddress ?: return null
             }
             else -> {
-                Log.w(TAG, "[$id] Unsupported address type: $atyp")
-                sendReply(output, REP_ATYP_NOT_SUPPORTED)
+                Log.w(TAG, "[$connId] Unsupported address type: $atyp")
+                sendSocksReply(output, REP_ATYP_NOT_SUPPORTED)
                 return null
             }
         }
 
         val portHi = input.read()
         val portLo = input.read()
+        if (portHi < 0 || portLo < 0) return null
         val port = (portHi shl 8) or portLo
 
-        return Target(host, port)
+        return SocksRequest(host, port)
     }
 
-    /** Resolves + connects a fresh outbound socket, bound to the Wi-Fi network. */
-    private suspend fun connectViaWifi(network: Network, host: String, port: Int): Socket =
+    /**
+     * Resolves target host and binds the outbound socket strictly to the authenticated Wi-Fi Network.
+     */
+    private suspend fun connectOutboundViaWifi(network: Network, host: String, port: Int): Socket =
         withContext(Dispatchers.IO) {
-            val resolved: InetAddress = withTimeoutOrNull(5_000) {
-                // Resolve using the Wi-Fi network specifically so DNS also
-                // goes over Wi-Fi, not whatever the default network is.
-                network.getAllByName(host).firstOrNull { it is Inet4Address }
-                    ?: network.getAllByName(host).firstOrNull()
-            } ?: throw IOException("DNS resolution failed or timed out for $host")
+            // Step 1: Upstream DNS Resolution
+            val resolvedAddress = networkManager.resolveHostOnUpstream(host, network)
+                ?: throw IOException("Upstream DNS resolution failed for '$host'")
 
-            val outSocket = Socket()
-            network.bindSocket(outSocket) // <-- forces this socket onto Wi-Fi
-            outSocket.connect(InetSocketAddress(resolved, port), CONNECT_TIMEOUT_MS)
-            outSocket
+            // Step 2: Create raw socket and bind to Wi-Fi Network
+            val outboundSocket = Socket()
+            val bound = networkManager.bindSocketToUpstream(outboundSocket, network)
+            if (!bound) {
+                outboundSocket.closeQuietly()
+                throw IOException("Failed to bind socket to authenticated Wi-Fi Network")
+            }
+
+            // Step 3: Connect to destination
+            outboundSocket.connect(InetSocketAddress(resolvedAddress, port), CONNECT_TIMEOUT_MS)
+            outboundSocket
         }
 
-    private fun sendReply(output: OutputStream, rep: Int) {
+    /**
+     * Transmits SOCKS5 Response packet back to client.
+     */
+    private fun sendSocksReply(
+        output: OutputStream,
+        replyCode: Int,
+        boundAddr: InetAddress? = null,
+        boundPort: Int = 0
+    ) {
         try {
-            output.write(
-                byteArrayOf(
-                    SOCKS_VERSION.toByte(), rep.toByte(), 0x00,
-                    ATYP_IPV4.toByte(), 0, 0, 0, 0, 0, 0
-                )
-            )
+            val addrBytes = boundAddr?.address ?: byteArrayOf(0, 0, 0, 0)
+            val atyp = if (addrBytes.size == 16) ATYP_IPV6.toByte() else ATYP_IPV4.toByte()
+            val portHi = (boundPort shr 8).toByte()
+            val portLo = (boundPort and 0xFF).toByte()
+
+            val response = ByteArray(4 + addrBytes.size + 2)
+            response[0] = SOCKS_VERSION.toByte()
+            response[1] = replyCode.toByte()
+            response[2] = 0x00 // RSV
+            response[3] = atyp
+            System.arraycopy(addrBytes, 0, response, 4, addrBytes.size)
+            response[response.size - 2] = portHi
+            response[response.size - 1] = portLo
+
+            output.write(response)
             output.flush()
         } catch (e: IOException) {
             Log.w(TAG, "Failed to send SOCKS reply: ${e.message}")
         }
     }
 
-    private suspend fun pipeBidirectionally(id: Long, a: Socket, b: Socket) {
-        val bytesAtoB = AtomicLong(0)
-        val bytesBtoA = AtomicLong(0)
+    /**
+     * Concurrently pipes data bidirectionally between client socket and outbound target socket.
+     */
+    private suspend fun relayStreams(connId: Long, client: Socket, target: Socket) {
+        val clientIn = client.getInputStream()
+        val clientOut = client.getOutputStream()
+        val targetIn = target.getInputStream()
+        val targetOut = target.getOutputStream()
 
-        // Either direction ending (client or target closes) tears down both
-        // sockets so the other copy loop unblocks from its read() call.
-        val clientToTarget = serviceScope.launch {
-            copyStream(a.getInputStream(), b.getOutputStream(), bytesAtoB)
-            a.closeQuietly()
-            b.closeQuietly()
-        }
-        val targetToClient = serviceScope.launch {
-            copyStream(b.getInputStream(), a.getOutputStream(), bytesBtoA)
-            a.closeQuietly()
-            b.closeQuietly()
+        val clientTx = AtomicLong(0)
+        val clientRx = AtomicLong(0)
+
+        val uploadJob = serviceScope.launch {
+            pumpData(clientIn, targetOut) { bytes ->
+                clientTx.addAndGet(bytes.toLong())
+                val current = totalTx.addAndGet(bytes.toLong())
+                _bytesTransferredTx.value = current
+            }
+            target.closeQuietly()
+            client.closeQuietly()
         }
 
-        clientToTarget.join()
-        targetToClient.join()
-        // Metadata-only logging — never log payload contents, only sizes.
-        Log.i(TAG, "[$id] Relay finished: ${bytesAtoB.get()}B up / ${bytesBtoA.get()}B down")
+        val downloadJob = serviceScope.launch {
+            pumpData(targetIn, clientOut) { bytes ->
+                clientRx.addAndGet(bytes.toLong())
+                val current = totalRx.addAndGet(bytes.toLong())
+                _bytesTransferredRx.value = current
+            }
+            client.closeQuietly()
+            target.closeQuietly()
+        }
+
+        uploadJob.join()
+        downloadJob.join()
+
+        Log.i(TAG, "[$connId] Tunnel finished. Tx: ${clientTx.get()} bytes, Rx: ${clientRx.get()} bytes")
     }
 
-    private fun copyStream(input: InputStream, output: OutputStream, counter: AtomicLong) {
-        val buffer = ByteArray(8 * 1024)
+    private fun pumpData(input: InputStream, output: OutputStream, onBytes: (Int) -> Unit) {
+        val buffer = ByteArray(BUFFER_SIZE)
         try {
             while (true) {
                 val read = input.read(buffer)
                 if (read == -1) break
                 output.write(buffer, 0, read)
                 output.flush()
-                counter.addAndGet(read.toLong())
+                onBytes(read)
             }
         } catch (e: IOException) {
-            // Expected once either socket is closed from the other direction.
+            // Normal when either side closes the connection
         }
+    }
+
+    private fun readExact(input: InputStream, buffer: ByteArray) {
+        var offset = 0
+        while (offset < buffer.size) {
+            val read = input.read(buffer, offset, buffer.size - offset)
+            if (read == -1) throw IOException("Premature EOF during SOCKS handshake")
+            offset += read
+        }
+    }
+
+    private fun isPrivateOrLocalAddress(address: InetAddress?): Boolean {
+        if (address == null) return false
+        if (address.isLoopbackAddress || address.isLinkLocalAddress || address.isSiteLocalAddress) {
+            return true
+        }
+        val bytes = address.address
+        if (bytes.size != 4) return false
+        val a = bytes[0].toInt() and 0xFF
+        val b = bytes[1].toInt() and 0xFF
+        return (a == 10) || (a == 172 && b in 16..31) || (a == 192 && b == 168)
     }
 
     private fun Socket.closeQuietly() {
         try {
             close()
-        } catch (_: IOException) { }
+        } catch (_: Exception) {}
     }
 
-    private fun readFully(input: InputStream, buffer: ByteArray) {
-        var offset = 0
-        while (offset < buffer.size) {
-            val read = input.read(buffer, offset, buffer.size - offset)
-            if (read == -1) throw IOException("Unexpected end of stream")
-            offset += read
-        }
-    }
-
-    // ------------------------------------------------------------------
-    // Shutdown
-    // ------------------------------------------------------------------
-
-    private fun shutdownProxy(reason: String) {
-        Log.i(TAG, "Shutting down proxy: $reason")
+    private fun shutdownServer(reason: String) {
+        Log.i(TAG, "Stopping SOCKS5 Server: $reason")
         serverJob?.cancel()
         serverJob = null
         try {
             serverSocket?.close()
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             Log.w(TAG, "Error closing server socket: ${e.message}")
         }
         serverSocket = null
 
-        // Force-close every in-flight connection so nothing lingers on a
-        // stale network.
+        // Force close all open connections
         activeSockets.forEach { it.closeQuietly() }
         activeSockets.clear()
         _activeConnections.value = 0
     }
 
-    // ------------------------------------------------------------------
-    // Notification
-    // ------------------------------------------------------------------
-
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "Wi-Fi Bridge",
+            "Wi-Fi Proxy Bridge Service",
             NotificationManager.IMPORTANCE_LOW
-        )
+        ).apply {
+            description = "Maintains the authenticated SOCKS5 proxy network bridge."
+        }
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
 
     private fun buildNotification(text: String): Notification {
         val pendingIntent = PendingIntent.getActivity(
-            this, 0, Intent(this, MainActivity::class.java),
+            this,
+            0,
+            Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE
         )
+
         return Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle("Wi-Fi Bridge")
+            .setContentTitle("Authenticated Wi-Fi Bridge")
             .setContentText(text)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentIntent(pendingIntent)

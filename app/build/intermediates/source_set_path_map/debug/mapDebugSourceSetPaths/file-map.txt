@@ -1,0 +1,38 @@
+com.example.wifibridgebypass.app-viewpager2-1.0.0-0 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\0cbe7ce17aa48e194c6ef2d1c08b2f3d\transformed\viewpager2-1.0.0\res
+com.example.wifibridgebypass.app-lifecycle-livedata-2.6.1-1 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\106e3ef0238cd5d1889cbab869c098b7\transformed\lifecycle-livedata-2.6.1\res
+com.example.wifibridgebypass.app-core-ktx-1.10.1-2 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\126f9fc2914e11145ce03046ae12af1b\transformed\core-ktx-1.10.1\res
+com.example.wifibridgebypass.app-coordinatorlayout-1.1.0-3 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\1d5aed83714b3e95cfb2105d01726a03\transformed\coordinatorlayout-1.1.0\res
+com.example.wifibridgebypass.app-material-1.9.0-4 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\1e830f56a2778f278bc19de96fa525dd\transformed\material-1.9.0\res
+com.example.wifibridgebypass.app-cardview-1.0.0-5 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\3e9584ca5a9a2fc5dca79e69116964f2\transformed\cardview-1.0.0\res
+com.example.wifibridgebypass.app-appcompat-1.6.1-6 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\4a4896a3e5a411cf1100ab4ae2028e52\transformed\appcompat-1.6.1\res
+com.example.wifibridgebypass.app-lifecycle-livedata-core-2.6.1-7 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\4ca1e4876a498db2c7749809fc81e5de\transformed\lifecycle-livedata-core-2.6.1\res
+com.example.wifibridgebypass.app-lifecycle-runtime-2.6.1-8 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\4d4513eab4b8f095e3376ab61b74fc83\transformed\lifecycle-runtime-2.6.1\res
+com.example.wifibridgebypass.app-lifecycle-viewmodel-ktx-2.6.1-9 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\53fd22527b30d139003dca59c2a13a93\transformed\lifecycle-viewmodel-ktx-2.6.1\res
+com.example.wifibridgebypass.app-profileinstaller-1.3.0-10 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\res
+com.example.wifibridgebypass.app-core-runtime-2.2.0-11 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\6358d0db0e9c4859e73b437d946a9cee\transformed\core-runtime-2.2.0\res
+com.example.wifibridgebypass.app-fragment-1.3.6-12 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\652be2a10091bee48779b7fdfbb660a5\transformed\fragment-1.3.6\res
+com.example.wifibridgebypass.app-transition-1.2.0-13 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\7b3035e23d45b000b70f3fa6e929420c\transformed\transition-1.2.0\res
+com.example.wifibridgebypass.app-appcompat-resources-1.6.1-14 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\7bbd34374fc06ed84103ae22fb3fe3de\transformed\appcompat-resources-1.6.1\res
+com.example.wifibridgebypass.app-lifecycle-viewmodel-2.6.1-15 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\875e3c3e1d40786527bb8e3817ed6824\transformed\lifecycle-viewmodel-2.6.1\res
+com.example.wifibridgebypass.app-lifecycle-livedata-ktx-2.6.1-16 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\97adad8bd41adc467782fdc87f701e32\transformed\lifecycle-livedata-ktx-2.6.1\res
+com.example.wifibridgebypass.app-constraintlayout-2.1.4-17 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\9888e633549018aebc97e67bd2e231a3\transformed\constraintlayout-2.1.4\res
+com.example.wifibridgebypass.app-lifecycle-process-2.6.1-18 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\c32b31e4ebe4cd5a93d8a2e8d59bf7a8\transformed\lifecycle-process-2.6.1\res
+com.example.wifibridgebypass.app-lifecycle-viewmodel-savedstate-2.6.1-19 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\c5cbb73ec2f43f0a81e072ab7a5ac6f2\transformed\lifecycle-viewmodel-savedstate-2.6.1\res
+com.example.wifibridgebypass.app-core-1.10.1-20 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\d667eca79418e8792c6eb354a846ce40\transformed\core-1.10.1\res
+com.example.wifibridgebypass.app-activity-1.6.0-21 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\d9bf7ab391d5da8c038b5056810e0ef5\transformed\activity-1.6.0\res
+com.example.wifibridgebypass.app-emoji2-1.2.0-22 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\ddd3629d6793059c66e910cc7bfbcf35\transformed\emoji2-1.2.0\res
+com.example.wifibridgebypass.app-lifecycle-livedata-core-ktx-2.6.1-23 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\e5bee4ffacab8ad51a5716259eebe520\transformed\lifecycle-livedata-core-ktx-2.6.1\res
+com.example.wifibridgebypass.app-savedstate-1.2.1-24 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\ec81b09d23c1281e06db529914f87f20\transformed\savedstate-1.2.1\res
+com.example.wifibridgebypass.app-drawerlayout-1.1.1-25 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\ee642aa36e11a5db5e46e8f1f10eeaa6\transformed\drawerlayout-1.1.1\res
+com.example.wifibridgebypass.app-startup-runtime-1.1.1-26 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\ee8003f5f2700d1eab7b0995133b65f2\transformed\startup-runtime-1.1.1\res
+com.example.wifibridgebypass.app-annotation-experimental-1.3.0-27 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\f135fde612a85a9c681aa4d701f6a067\transformed\annotation-experimental-1.3.0\res
+com.example.wifibridgebypass.app-emoji2-views-helper-1.2.0-28 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\f2a2c2ec100b65305f039537b546d33f\transformed\emoji2-views-helper-1.2.0\res
+com.example.wifibridgebypass.app-recyclerview-1.1.0-29 C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\f63d238aa69f46ae870cbeb258395b8a\transformed\recyclerview-1.1.0\res
+com.example.wifibridgebypass.app-pngs-30 C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\build\generated\res\pngs\debug
+com.example.wifibridgebypass.app-resValues-31 C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\build\generated\res\resValues\debug
+com.example.wifibridgebypass.app-updated_navigation_xml-32 C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\build\generated\updated_navigation_xml\debug
+com.example.wifibridgebypass.app-packageDebugResources-33 C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.example.wifibridgebypass.app-packageDebugResources-34 C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.example.wifibridgebypass.app-debug-35 C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.example.wifibridgebypass.app-debug-36 C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\debug\res
+com.example.wifibridgebypass.app-main-37 C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\res

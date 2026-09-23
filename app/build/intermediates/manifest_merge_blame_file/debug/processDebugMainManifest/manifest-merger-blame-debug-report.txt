@@ -1,0 +1,170 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.wifibridgebypass"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="28"
+9        android:targetSdkVersion="34" />
+10
+11    <!-- Permissions for Wi-Fi and Network Management -->
+12    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+12-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:6:5-76
+12-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:6:22-73
+13    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+13-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:7:5-76
+13-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:7:22-73
+14    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+14-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:8:5-79
+14-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:8:22-76
+15    <uses-permission android:name="android.permission.INTERNET" />
+15-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:9:5-67
+15-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:9:22-64
+16    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+16-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:10:5-79
+16-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:10:22-76
+17
+18    <!-- Foreground Service Permission for Background Proxy -->
+19    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+19-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:13:5-77
+19-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:13:22-74
+20    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+20-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:14:5-89
+20-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:14:22-86
+21
+22    <permission
+22-->[androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\d667eca79418e8792c6eb354a846ce40\transformed\core-1.10.1\AndroidManifest.xml:22:5-24:47
+23        android:name="com.example.wifibridgebypass.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+23-->[androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\d667eca79418e8792c6eb354a846ce40\transformed\core-1.10.1\AndroidManifest.xml:23:9-81
+24        android:protectionLevel="signature" />
+24-->[androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\d667eca79418e8792c6eb354a846ce40\transformed\core-1.10.1\AndroidManifest.xml:24:9-44
+25
+26    <uses-permission android:name="com.example.wifibridgebypass.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+26-->[androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\d667eca79418e8792c6eb354a846ce40\transformed\core-1.10.1\AndroidManifest.xml:26:5-97
+26-->[androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\d667eca79418e8792c6eb354a846ce40\transformed\core-1.10.1\AndroidManifest.xml:26:22-94
+27
+28    <application
+28-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:16:5-44:19
+29        android:allowBackup="true"
+29-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:17:9-35
+30        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+30-->[androidx.core:core:1.10.1] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\d667eca79418e8792c6eb354a846ce40\transformed\core-1.10.1\AndroidManifest.xml:28:18-86
+31        android:debuggable="true"
+32        android:extractNativeLibs="false"
+33        android:icon="@mipmap/ic_launcher"
+33-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:18:9-43
+34        android:label="@string/app_name"
+34-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:19:9-41
+35        android:roundIcon="@mipmap/ic_launcher_round"
+35-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:20:9-54
+36        android:supportsRtl="true"
+36-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:21:9-35
+37        android:testOnly="true"
+38        android:theme="@style/Theme.WiFiBridgeBypass" >
+38-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:22:9-54
+39        <activity
+39-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:25:9-32:20
+40            android:name="com.example.wifibridgebypass.MainActivity"
+40-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:26:13-41
+41            android:exported="true" >
+41-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:27:13-36
+42            <intent-filter>
+42-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:28:13-31:29
+43                <action android:name="android.intent.action.MAIN" />
+43-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:29:17-69
+43-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:29:25-66
+44
+45                <category android:name="android.intent.category.LAUNCHER" />
+45-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:30:17-77
+45-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:30:27-74
+46            </intent-filter>
+47        </activity>
+48
+49        <!-- Proxy Service Declaration -->
+50        <service
+50-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:35:9-43:19
+51            android:name="com.example.wifibridgebypass.services.ProxyBridgeService"
+51-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:36:13-56
+52            android:enabled="true"
+52-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:37:13-35
+53            android:exported="false"
+53-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:38:13-37
+54            android:foregroundServiceType="specialUse" >
+54-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:39:13-55
+55            <property
+55-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:40:13-42:48
+56                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+56-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:41:17-76
+57                android:value="proxy_bridge" />
+57-->C:\Users\Gackstone_Baraka\Downloads\Wifi Bypass\app\src\main\AndroidManifest.xml:42:17-45
+58        </service>
+59
+60        <provider
+60-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\ddd3629d6793059c66e910cc7bfbcf35\transformed\emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+61            android:name="androidx.startup.InitializationProvider"
+61-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\ddd3629d6793059c66e910cc7bfbcf35\transformed\emoji2-1.2.0\AndroidManifest.xml:25:13-67
+62            android:authorities="com.example.wifibridgebypass.androidx-startup"
+62-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\ddd3629d6793059c66e910cc7bfbcf35\transformed\emoji2-1.2.0\AndroidManifest.xml:26:13-68
+63            android:exported="false" >
+63-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\ddd3629d6793059c66e910cc7bfbcf35\transformed\emoji2-1.2.0\AndroidManifest.xml:27:13-37
+64            <meta-data
+64-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\ddd3629d6793059c66e910cc7bfbcf35\transformed\emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+65                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+65-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\ddd3629d6793059c66e910cc7bfbcf35\transformed\emoji2-1.2.0\AndroidManifest.xml:30:17-75
+66                android:value="androidx.startup" />
+66-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\ddd3629d6793059c66e910cc7bfbcf35\transformed\emoji2-1.2.0\AndroidManifest.xml:31:17-49
+67            <meta-data
+67-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\c32b31e4ebe4cd5a93d8a2e8d59bf7a8\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:29:13-31:52
+68                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+68-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\c32b31e4ebe4cd5a93d8a2e8d59bf7a8\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:30:17-78
+69                android:value="androidx.startup" />
+69-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\c32b31e4ebe4cd5a93d8a2e8d59bf7a8\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:31:17-49
+70            <meta-data
+70-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:29:13-31:52
+71                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+71-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:30:17-85
+72                android:value="androidx.startup" />
+72-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:31:17-49
+73        </provider>
+74
+75        <receiver
+75-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:34:9-52:20
+76            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+76-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:35:13-76
+77            android:directBootAware="false"
+77-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:36:13-44
+78            android:enabled="true"
+78-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:37:13-35
+79            android:exported="true"
+79-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:38:13-36
+80            android:permission="android.permission.DUMP" >
+80-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:39:13-57
+81            <intent-filter>
+81-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:40:13-42:29
+82                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+82-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:41:17-91
+82-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:41:25-88
+83            </intent-filter>
+84            <intent-filter>
+84-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:43:13-45:29
+85                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+85-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:44:17-85
+85-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:44:25-82
+86            </intent-filter>
+87            <intent-filter>
+87-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:46:13-48:29
+88                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+88-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:47:17-88
+88-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:47:25-85
+89            </intent-filter>
+90            <intent-filter>
+90-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:49:13-51:29
+91                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+91-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:50:17-95
+91-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Gackstone_Baraka\.gradle\caches\8.13\transforms\56b1dc67e950c1450616a13834912e83\transformed\profileinstaller-1.3.0\AndroidManifest.xml:50:25-92
+92            </intent-filter>
+93        </receiver>
+94    </application>
+95
+96</manifest>

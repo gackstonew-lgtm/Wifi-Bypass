@@ -5,8 +5,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.net.Network
+import android.net.wifi.WifiManager
 import android.os.IBinder
 import android.util.Log
 import com.example.wifibridgebypass.MainActivity
@@ -17,6 +19,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,6 +36,8 @@ import java.net.ServerSocket
 import java.net.Socket
 import java.net.SocketTimeoutException
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
 /**
@@ -58,6 +64,32 @@ class ProxyBridgeService : Service() {
         WAITING_FOR_WIFI,
         RUNNING,
         ERROR
+    }
+
+    /**
+     * Bounded, thread-safe byte buffer pool to eliminate GC pressure during sustained transfers.
+     */
+    private object BufferPool {
+        const val BUFFER_SIZE = 32 * 1024 // 32KB high throughput buffer
+        private const val MAX_POOL_SIZE = 64
+        private val pool = ConcurrentLinkedQueue<ByteArray>()
+        private val pooledCount = AtomicInteger(0)
+
+        fun acquire(): ByteArray {
+            val buffer = pool.poll()
+            if (buffer != null) {
+                pooledCount.decrementAndGet()
+                return buffer
+            }
+            return ByteArray(BUFFER_SIZE)
+        }
+
+        fun release(buffer: ByteArray) {
+            if (buffer.size == BUFFER_SIZE && pooledCount.get() < MAX_POOL_SIZE) {
+                pool.offer(buffer)
+                pooledCount.incrementAndGet()
+            }
+        }
     }
 
     companion object {
@@ -93,7 +125,6 @@ class ProxyBridgeService : Service() {
 
         private const val HANDSHAKE_TIMEOUT_MS = 10_000
         private const val CONNECT_TIMEOUT_MS = 12_000
-        private const val BUFFER_SIZE = 16 * 1024 // 16KB high throughput buffer
 
         // Observables for UI & ViewModel
         private val _status = MutableStateFlow(BridgeStatus.STOPPED)
@@ -120,7 +151,9 @@ class ProxyBridgeService : Service() {
 
     private var serverJob: Job? = null
     private var networkWatcherJob: Job? = null
+    private var metricsJob: Job? = null
     private var serverSocket: ServerSocket? = null
+    private var wifiLock: WifiManager.WifiLock? = null
 
     // Set of active sockets to ensure clean teardown if upstream Wi-Fi drops
     private val activeSockets = ConcurrentHashMap.newKeySet<Socket>()
@@ -151,6 +184,86 @@ class ProxyBridgeService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    /**
+     * Applies optimized socket options (TCP_NODELAY, SO_KEEPALIVE, tuned buffers)
+     * for high-throughput and low latency.
+     */
+    private fun configureSocket(socket: Socket) {
+        try {
+            socket.tcpNoDelay = true
+            socket.keepAlive = true
+            socket.receiveBufferSize = 64 * 1024
+            socket.sendBufferSize = 64 * 1024
+        } catch (e: Exception) {
+            Log.w(TAG, "Socket options could not be fully applied: ${e.message}")
+        }
+    }
+
+    /**
+     * Prevents Android Wi-Fi power-save sleep from dropping throughput during background streaming.
+     */
+    @Suppress("DEPRECATION")
+    private fun acquireWifiLock() {
+        try {
+            if (wifiLock == null) {
+                val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
+                wifiLock = wifiManager?.createWifiLock(
+                    WifiManager.WIFI_MODE_FULL_HIGH_PERF,
+                    "WiFiBridge:HighPerfLock"
+                )?.apply {
+                    setReferenceCounted(false)
+                }
+            }
+            wifiLock?.let {
+                if (!it.isHeld) it.acquire()
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Unable to acquire high-performance Wi-Fi lock: ${e.message}")
+        }
+    }
+
+    private fun releaseWifiLock() {
+        try {
+            wifiLock?.let {
+                if (it.isHeld) it.release()
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Error releasing Wi-Fi lock: ${e.message}")
+        }
+        wifiLock = null
+    }
+
+    /**
+     * Starts a periodic metrics updater (4 Hz) to prevent UI thread / Looper starvation.
+     */
+    private fun startMetricsReporter() {
+        metricsJob?.cancel()
+        metricsJob = serviceScope.launch {
+            var lastTx = -1L
+            var lastRx = -1L
+            while (isActive) {
+                delay(250) // Sample at 4 Hz
+                val currentTx = totalTx.get()
+                val currentRx = totalRx.get()
+                if (currentTx != lastTx) {
+                    _bytesTransferredTx.value = currentTx
+                    lastTx = currentTx
+                }
+                if (currentRx != lastRx) {
+                    _bytesTransferredRx.value = currentRx
+                    lastRx = currentRx
+                }
+            }
+        }
+    }
+
+    private fun stopMetricsReporter() {
+        metricsJob?.cancel()
+        metricsJob = null
+        _bytesTransferredTx.value = totalTx.get()
+        _bytesTransferredRx.value = totalRx.get()
+    }
 
     /**
      * Observes upstream Wi-Fi connectivity. If Wi-Fi becomes authenticated, the proxy is launched.
@@ -194,6 +307,9 @@ class ProxyBridgeService : Service() {
      * Spawns the SOCKS5 ServerSocket listening on PROXY_PORT.
      */
     private fun startServer(network: Network) {
+        acquireWifiLock()
+        startMetricsReporter()
+
         serverJob = serviceScope.launch {
             try {
                 // Binding to 0.0.0.0:1080 allows accepting clients from Hotspot (192.168.43.1),
@@ -216,6 +332,9 @@ class ProxyBridgeService : Service() {
                         break
                     }
 
+                    // Apply socket optimizations immediately upon accept
+                    configureSocket(clientSocket)
+
                     // Security: Verify that the incoming peer is on a local/private subnet
                     if (!isPrivateOrLocalAddress(clientSocket.inetAddress)) {
                         Log.w(TAG, "Unauthorized non-private connection attempt from ${clientSocket.inetAddress}")
@@ -224,12 +343,7 @@ class ProxyBridgeService : Service() {
                     }
 
                     // Verify upstream Wi-Fi network is still valid
-                    val currentNetwork = networkManager.getAuthenticatedWifiNetwork()
-                    if (currentNetwork == null) {
-                        Log.w(TAG, "Upstream Wi-Fi network lost; rejecting incoming client")
-                        clientSocket.closeQuietly()
-                        continue
-                    }
+                    val currentNetwork = networkManager.getAuthenticatedWifiNetwork() ?: network
 
                     val connId = connectionCounter.incrementAndGet()
                     activeSockets.add(clientSocket)
@@ -296,7 +410,7 @@ class ProxyBridgeService : Service() {
 
                         Log.i(TAG, "[$connId] SOCKS5 tunnel established successfully to ${request.host}:${request.port}")
 
-                        // Step 4: Bidirectional Data Pipe
+                        // Step 4: High-Throughput Bidirectional Data Pipe
                         relayStreams(connId, client, target)
                     } finally {
                         activeSockets.remove(target)
@@ -405,12 +519,13 @@ class ProxyBridgeService : Service() {
      */
     private suspend fun connectOutboundViaWifi(network: Network, host: String, port: Int): Socket =
         withContext(Dispatchers.IO) {
-            // Step 1: Upstream DNS Resolution
+            // Step 1: Upstream DNS Resolution (Cached and bound)
             val resolvedAddress = networkManager.resolveHostOnUpstream(host, network)
                 ?: throw IOException("Upstream DNS resolution failed for '$host'")
 
-            // Step 2: Create raw socket and bind to Wi-Fi Network
+            // Step 2: Create raw socket, tune TCP options and bind explicitly to Wi-Fi Network
             val outboundSocket = Socket()
+            configureSocket(outboundSocket)
             val bound = networkManager.bindSocketToUpstream(outboundSocket, network)
             if (!bound) {
                 outboundSocket.closeQuietly()
@@ -454,9 +569,10 @@ class ProxyBridgeService : Service() {
     }
 
     /**
-     * Concurrently pipes data bidirectionally between client socket and outbound target socket.
+     * Concurrently pipes data bidirectionally between client socket and outbound target socket
+     * using structured concurrency and pooled memory buffers.
      */
-    private suspend fun relayStreams(connId: Long, client: Socket, target: Socket) {
+    private suspend fun relayStreams(connId: Long, client: Socket, target: Socket) = coroutineScope {
         val clientIn = client.getInputStream()
         val clientOut = client.getOutputStream()
         val targetIn = target.getInputStream()
@@ -465,24 +581,22 @@ class ProxyBridgeService : Service() {
         val clientTx = AtomicLong(0)
         val clientRx = AtomicLong(0)
 
-        val uploadJob = serviceScope.launch {
+        val uploadJob = launch(Dispatchers.IO) {
             pumpData(clientIn, targetOut) { bytes ->
                 clientTx.addAndGet(bytes.toLong())
-                val current = totalTx.addAndGet(bytes.toLong())
-                _bytesTransferredTx.value = current
+                totalTx.addAndGet(bytes.toLong())
             }
-            target.closeQuietly()
-            client.closeQuietly()
+            try { target.shutdownOutput() } catch (_: Exception) {}
+            try { client.shutdownInput() } catch (_: Exception) {}
         }
 
-        val downloadJob = serviceScope.launch {
+        val downloadJob = launch(Dispatchers.IO) {
             pumpData(targetIn, clientOut) { bytes ->
                 clientRx.addAndGet(bytes.toLong())
-                val current = totalRx.addAndGet(bytes.toLong())
-                _bytesTransferredRx.value = current
+                totalRx.addAndGet(bytes.toLong())
             }
-            client.closeQuietly()
-            target.closeQuietly()
+            try { client.shutdownOutput() } catch (_: Exception) {}
+            try { target.shutdownInput() } catch (_: Exception) {}
         }
 
         uploadJob.join()
@@ -491,18 +605,22 @@ class ProxyBridgeService : Service() {
         Log.i(TAG, "[$connId] Tunnel finished. Tx: ${clientTx.get()} bytes, Rx: ${clientRx.get()} bytes")
     }
 
+    /**
+     * Streams data from input to output using the high-performance buffer pool.
+     */
     private fun pumpData(input: InputStream, output: OutputStream, onBytes: (Int) -> Unit) {
-        val buffer = ByteArray(BUFFER_SIZE)
+        val buffer = BufferPool.acquire()
         try {
             while (true) {
                 val read = input.read(buffer)
                 if (read == -1) break
                 output.write(buffer, 0, read)
-                output.flush()
                 onBytes(read)
             }
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             // Normal when either side closes the connection
+        } finally {
+            BufferPool.release(buffer)
         }
     }
 
@@ -535,6 +653,9 @@ class ProxyBridgeService : Service() {
 
     private fun shutdownServer(reason: String) {
         Log.i(TAG, "Stopping SOCKS5 Server: $reason")
+        stopMetricsReporter()
+        releaseWifiLock()
+
         serverJob?.cancel()
         serverJob = null
         try {

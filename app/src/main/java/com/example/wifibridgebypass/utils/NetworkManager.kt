@@ -24,6 +24,7 @@ import java.net.NetworkInterface
 import java.net.Socket
 import java.net.SocketTimeoutException
 import java.util.Collections
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Represents the classified state of the device's upstream Wi-Fi interface.
@@ -107,6 +108,17 @@ class NetworkManager(private val context: Context) {
     private val connectivityManager: ConnectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
+    // Bounded thread-safe DNS resolution cache with TTL to eliminate repetitive upstream DNS queries
+    private val dnsCache = ConcurrentHashMap<String, DnsCacheEntry>()
+    private val dnsCacheTtlMs = 5 * 60 * 1000L // 5 minutes TTL
+    private val maxDnsCacheSize = 256
+
+    private data class DnsCacheEntry(val address: InetAddress, val timestamp: Long)
+
+    fun clearDnsCache() {
+        dnsCache.clear()
+    }
+
     /**
      * Deterministically finds and ranks candidate Wi-Fi networks to identify the true upstream STA interface.
      *
@@ -115,6 +127,7 @@ class NetworkManager(private val context: Context) {
      * This function iterates through all networks, inspects their capabilities and LinkProperties,
      * penalizes downstream SoftAP interfaces, and returns the highest-ranking upstream STA candidate.
      */
+    @Suppress("DEPRECATION")
     private fun findBestUpstreamWifiNetwork(): NetworkCandidate? {
         val allNetworks = connectivityManager.allNetworks
         val activeNet = connectivityManager.activeNetwork
@@ -143,14 +156,14 @@ class NetworkManager(private val context: Context) {
             }
 
             val ifaceName = lp?.interfaceName?.lowercase() ?: ""
-            val ips = lp?.linkAddresses
+            val ips: List<String> = lp?.linkAddresses
                 ?.mapNotNull { it.address }
                 ?.filterIsInstance<Inet4Address>()
                 ?.filter { !it.isLoopbackAddress && !it.isLinkLocalAddress }
-                ?.map { it.hostAddress } ?: emptyList()
+                ?.mapNotNull { it.hostAddress } ?: emptyList()
 
             val hasDefaultRoute = lp?.routes?.any { route ->
-                route.isDefaultRoute || (route.destination?.address?.isAnyLocalAddress == true)
+                route.isDefaultRoute || (route.destination.address.isAnyLocalAddress)
             } ?: false
 
             // Identify downstream SoftAP interfaces on Samsung / Android
@@ -290,11 +303,13 @@ class NetworkManager(private val context: Context) {
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 Log.d(TAG, "NetworkCallback.onAvailable: $network")
+                clearDnsCache()
                 trySend(getUpstreamWifiState())
             }
 
             override fun onLost(network: Network) {
                 Log.d(TAG, "NetworkCallback.onLost: $network")
+                clearDnsCache()
                 trySend(getUpstreamWifiState())
             }
 
@@ -305,11 +320,13 @@ class NetworkManager(private val context: Context) {
 
             override fun onLinkPropertiesChanged(network: Network, linkProperties: LinkProperties) {
                 Log.d(TAG, "NetworkCallback.onLinkPropertiesChanged: $network")
+                clearDnsCache()
                 trySend(getUpstreamWifiState())
             }
 
             override fun onUnavailable() {
                 Log.d(TAG, "NetworkCallback.onUnavailable")
+                clearDnsCache()
                 trySend(UpstreamWifiState.Disconnected)
             }
         }
@@ -348,16 +365,39 @@ class NetworkManager(private val context: Context) {
 
     /**
      * Resolves a domain name explicitly using the DNS servers assigned to the authenticated Wi-Fi Network.
-     * This prevents DNS leaks over cellular or default resolver and ensures internal portal hostnames resolve.
+     * Utilizes a thread-safe bounded LRU cache with TTL to eliminate repetitive upstream DNS latency.
      */
     suspend fun resolveHostOnUpstream(host: String, targetNetwork: Network? = null): InetAddress? =
         withContext(Dispatchers.IO) {
             val network = targetNetwork ?: getAuthenticatedWifiNetwork() ?: return@withContext null
+
+            // Fast path 1: Check if host is already an IP address literal
+            try {
+                if (host.matches(Regex("^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"))) {
+                    return@withContext InetAddress.getByName(host)
+                }
+            } catch (_: Exception) {}
+
+            // Fast path 2: Check bounded DNS cache
+            val now = System.currentTimeMillis()
+            val cached = dnsCache[host]
+            if (cached != null && (now - cached.timestamp) < dnsCacheTtlMs) {
+                return@withContext cached.address
+            }
+
             try {
                 withTimeoutOrNull(4000) {
                     val addresses = network.getAllByName(host)
                     // Prefer IPv4 for compatibility with local proxy clients
-                    addresses.firstOrNull { it is Inet4Address } ?: addresses.firstOrNull()
+                    val resolved = addresses.firstOrNull { it is Inet4Address } ?: addresses.firstOrNull()
+                    if (resolved != null) {
+                        if (dnsCache.size >= maxDnsCacheSize) {
+                            val oldestKey = dnsCache.minByOrNull { it.value.timestamp }?.key
+                            if (oldestKey != null) dnsCache.remove(oldestKey)
+                        }
+                        dnsCache[host] = DnsCacheEntry(resolved, now)
+                    }
+                    resolved
                 }
             } catch (e: Exception) {
                 Log.w(TAG, "Upstream DNS resolution failed for '$host': ${e.message}")
@@ -383,10 +423,10 @@ class NetworkManager(private val context: Context) {
                 if (!iface.isUp || iface.isLoopback) continue
                 val name = iface.name.lowercase()
 
-                val ips = Collections.list(iface.inetAddresses)
+                val ips: List<String> = Collections.list(iface.inetAddresses)
                     .filterIsInstance<Inet4Address>()
                     .filter { !it.isLoopbackAddress && !it.isLinkLocalAddress }
-                    .map { it.hostAddress }
+                    .mapNotNull { it.hostAddress }
 
                 if (ips.isEmpty()) continue
 
@@ -419,9 +459,9 @@ class NetworkManager(private val context: Context) {
             // Fallback: Check for any private RFC1918 address (192.168.43.x or 192.168.42.x)
             for (iface in interfaces) {
                 if (!iface.isUp || iface.isLoopback) continue
-                val ips = Collections.list(iface.inetAddresses)
+                val ips: List<String> = Collections.list(iface.inetAddresses)
                     .filterIsInstance<Inet4Address>()
-                    .map { it.hostAddress }
+                    .mapNotNull { it.hostAddress }
 
                 val apMatch = ips.filter { it.startsWith("192.168.43.") }
                 if (apMatch.isNotEmpty()) {
@@ -512,10 +552,8 @@ class NetworkManager(private val context: Context) {
 
         // Step 2: Open socket and bind explicitly to Wi-Fi network
         val socket = Socket()
-        var socketBound = false
         try {
             network.bindSocket(socket)
-            socketBound = true
         } catch (e: Exception) {
             socket.closeQuietly()
             val latency = System.currentTimeMillis() - startTime

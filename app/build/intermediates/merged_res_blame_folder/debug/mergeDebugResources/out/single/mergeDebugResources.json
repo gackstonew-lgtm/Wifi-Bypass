@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "com.example.wifibridgebypass.app-debug-34:/drawable_badge_background_green.xml.flat",
+        "source": "com.example.wifibridgebypass.app-main-36:/drawable/badge_background_green.xml"
+    },
+    {
+        "merged": "com.example.wifibridgebypass.app-debug-34:/drawable_badge_background_red.xml.flat",
+        "source": "com.example.wifibridgebypass.app-main-36:/drawable/badge_background_red.xml"
+    },
+    {
+        "merged": "com.example.wifibridgebypass.app-debug-34:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.example.wifibridgebypass.app-main-36:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.example.wifibridgebypass.app-debug-34:/layout_activity_main.xml.flat",
+        "source": "com.example.wifibridgebypass.app-main-36:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.wifibridgebypass.app-debug-34:/drawable_badge_background_orange.xml.flat",
+        "source": "com.example.wifibridgebypass.app-main-36:/drawable/badge_background_orange.xml"
+    },
+    {
+        "merged": "com.example.wifibridgebypass.app-debug-34:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.example.wifibridgebypass.app-main-36:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    }
+]

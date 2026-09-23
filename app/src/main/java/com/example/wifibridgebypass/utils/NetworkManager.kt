@@ -2,9 +2,11 @@ package com.example.wifibridgebypass.utils
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.LinkProperties
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.net.RouteInfo
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -15,13 +17,12 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.net.HttpURLConnection
 import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.NetworkInterface
 import java.net.Socket
-import java.net.URL
+import java.net.SocketTimeoutException
 import java.util.Collections
 
 /**
@@ -51,29 +52,47 @@ data class ConnectionTestResult(
     val latencyMs: Long,
     val resolvedIp: String?,
     val httpCode: Int?,
+    val socketBound: Boolean,
     val message: String
+)
+
+/**
+ * Internal model representing an evaluated Wi-Fi network candidate.
+ */
+private data class NetworkCandidate(
+    val network: Network,
+    val capabilities: NetworkCapabilities,
+    val linkProperties: LinkProperties?,
+    val interfaceName: String,
+    val ipAddresses: List<String>,
+    val hasDefaultRoute: Boolean,
+    val isSoftApInterface: Boolean,
+    val score: Int,
+    val statusSummary: String
 )
 
 /**
  * NetworkManager is the central networking architectural component for the Legitimate Network Bridge.
  *
  * It manages:
- * 1. Explicit Upstream Wi-Fi Identification: Filters for the physical Wi-Fi STA network that holds
- *    legitimate authentication, preventing accidental leakage over Cellular or unauthenticated interfaces.
- * 2. Socket Binding (Network.bindSocket): Forcibly binds outbound client proxy sockets to the authenticated
+ * 1. Deterministic Upstream Wi-Fi STA Selection: Filters and ranks all active Network objects to
+ *    reliably distinguish the true Wi-Fi STA connection from Samsung downstream SoftAP/Wi-Fi Sharing
+ *    interfaces (such as swlan0, ap0, softap0).
+ * 2. Real Usability Verification: Treats Android's VALIDATED capability as metadata, validating real
+ *    reachability through socket probes so unvalidated or delayed captive sessions are not discarded.
+ * 3. Socket Binding (Network.bindSocket): Forcibly binds outbound client proxy sockets to the authenticated
  *    Wi-Fi interface at the OS routing table level. Outbound packets originate directly from Android's user-space
- *    TCP stack, preserving the legitimate MAC, IP, and non-decremented TTL (64), making the proxy completely
- *    invisible to ISP Radius tethering detection.
- * 3. Downstream Interface Discovery: Identifies local Hotspot (ap0/wlan1/softap) or USB Tethering (rndis0/usb0)
+ *    TCP stack, preserving the legitimate MAC, IP, and non-decremented TTL (64), avoiding tethering detection.
+ * 4. Downstream Interface Discovery: Identifies local Hotspot (swlan0/ap0/wlan1) or USB Tethering (rndis0/usb0)
  *    interfaces to serve as the local SOCKS5 gateway.
- * 4. In-flight Diagnostic Probing: Verifies end-to-end HTTP/TCP handshake over the bound upstream network.
+ * 5. Strict Cellular Isolation: Guarantees that proxy traffic never leaks onto mobile data.
  */
 class NetworkManager(private val context: Context) {
 
     companion object {
         private const val TAG = "NetworkManager"
         private const val PROBE_TIMEOUT_MS = 6000
-        private const val PROBE_URL = "http://connectivitycheck.gstatic.com/generate_204"
+        private const val PROBE_URL_HOST = "connectivitycheck.gstatic.com"
 
         @Volatile
         private var instance: NetworkManager? = null
@@ -89,44 +108,176 @@ class NetworkManager(private val context: Context) {
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     /**
-     * Synchronously retrieves the current Upstream Wi-Fi state and associated Network object.
+     * Deterministically finds and ranks candidate Wi-Fi networks to identify the true upstream STA interface.
+     *
+     * Samsung devices (such as the Galaxy Note 8) create virtual or secondary Wi-Fi interfaces
+     * (e.g., swlan0, ap0) when Mobile Hotspot / Wi-Fi Sharing is enabled.
+     * This function iterates through all networks, inspects their capabilities and LinkProperties,
+     * penalizes downstream SoftAP interfaces, and returns the highest-ranking upstream STA candidate.
      */
-    fun getUpstreamWifiState(): UpstreamWifiState {
+    private fun findBestUpstreamWifiNetwork(): NetworkCandidate? {
         val allNetworks = connectivityManager.allNetworks
+        val activeNet = connectivityManager.activeNetwork
+        val candidates = mutableListOf<NetworkCandidate>()
+
+        Log.d(TAG, "Evaluating network candidates (total active networks: ${allNetworks.size})")
+
         for (network in allNetworks) {
             val caps = connectivityManager.getNetworkCapabilities(network) ?: continue
+            val lp = connectivityManager.getLinkProperties(network)
 
-            // Must be Wi-Fi transport (STA mode)
-            if (caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)) {
-                    return UpstreamWifiState.CaptivePortalDetected
-                }
-
-                val hasInternet = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                val isValidated = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-
-                if (hasInternet && isValidated) {
-                    val ip = getIpForNetwork(network)
-                    return UpstreamWifiState.Authenticated(network, ip)
-                } else if (hasInternet) {
-                    // On captive portals with paid subscription, sometimes the system VALIDATED flag
-                    // is temporarily delayed even though traffic is passing after login.
-                    val ip = getIpForNetwork(network)
-                    return UpstreamWifiState.Authenticated(network, ip)
-                } else {
-                    return UpstreamWifiState.ConnectedNoInternet
-                }
+            // Strictly filter out cellular and bluetooth networks
+            if (caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                Log.d(TAG, "  - Network $network rejected: TRANSPORT_CELLULAR")
+                continue
             }
+            if (caps.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) {
+                Log.d(TAG, "  - Network $network rejected: TRANSPORT_BLUETOOTH")
+                continue
+            }
+
+            // Must have Wi-Fi transport
+            if (!caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                Log.d(TAG, "  - Network $network rejected: missing TRANSPORT_WIFI")
+                continue
+            }
+
+            val ifaceName = lp?.interfaceName?.lowercase() ?: ""
+            val ips = lp?.linkAddresses
+                ?.mapNotNull { it.address }
+                ?.filterIsInstance<Inet4Address>()
+                ?.filter { !it.isLoopbackAddress && !it.isLinkLocalAddress }
+                ?.map { it.hostAddress } ?: emptyList()
+
+            val hasDefaultRoute = lp?.routes?.any { route ->
+                route.isDefaultRoute || (route.destination?.address?.isAnyLocalAddress == true)
+            } ?: false
+
+            // Identify downstream SoftAP interfaces on Samsung / Android
+            // Common SoftAP interface names: swlan0, ap0, softap0, p2p0, or subnets 192.168.43.x / 192.168.42.x
+            val isSoftApName = ifaceName.contains("swlan") ||
+                    ifaceName.contains("softap") ||
+                    ifaceName.contains("ap0") ||
+                    ifaceName.contains("p2p")
+            val isHotspotSubnet = ips.any { it.startsWith("192.168.43.") || it.startsWith("192.168.42.") }
+            val isSoftAp = isSoftApName || isHotspotSubnet
+
+            // Score calculation
+            var score = 0
+            val statusParts = mutableListOf<String>()
+
+            if (isSoftAp) {
+                score -= 10000 // Disqualify downstream SoftAP interface as upstream STA
+                statusParts.add("SoftAP/Hotspot interface (Disqualified as upstream)")
+            } else {
+                score += 1000 // Base score for non-SoftAP Wi-Fi
+                statusParts.add("Wi-Fi STA")
+            }
+
+            if (ips.isNotEmpty()) {
+                score += 500
+                statusParts.add("IPv4: ${ips.joinToString()}")
+            } else {
+                score -= 300
+                statusParts.add("No IPv4")
+            }
+
+            if (hasDefaultRoute) {
+                score += 400
+                statusParts.add("DefaultRoute: Yes")
+            }
+
+            if (ifaceName.contains("wlan0") || ifaceName.contains("wlan")) {
+                score += 200
+                statusParts.add("Interface: $ifaceName")
+            }
+
+            if (network == activeNet) {
+                score += 400
+                statusParts.add("ActiveNetwork: Yes")
+            }
+
+            if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
+                score += 300
+                statusParts.add("INTERNET: Yes")
+            }
+
+            if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
+                score += 200
+                statusParts.add("VALIDATED: Yes")
+            }
+
+            if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)) {
+                score += 150
+                statusParts.add("CAPTIVE_PORTAL: Yes")
+            }
+
+            val candidate = NetworkCandidate(
+                network = network,
+                capabilities = caps,
+                linkProperties = lp,
+                interfaceName = ifaceName,
+                ipAddresses = ips,
+                hasDefaultRoute = hasDefaultRoute,
+                isSoftApInterface = isSoftAp,
+                score = score,
+                statusSummary = statusParts.joinToString(" | ")
+            )
+
+            Log.d(TAG, "  - Candidate Network $network ($ifaceName): score=$score [${candidate.statusSummary}]")
+            candidates.add(candidate)
         }
-        return UpstreamWifiState.Disconnected
+
+        val bestCandidate = candidates.filter { it.score > 0 }.maxByOrNull { it.score }
+        if (bestCandidate != null) {
+            Log.i(TAG, "Selected best upstream Wi-Fi Network: ${bestCandidate.network} (${bestCandidate.interfaceName}, IPs: ${bestCandidate.ipAddresses}, Score: ${bestCandidate.score})")
+        } else {
+            Log.w(TAG, "No valid upstream Wi-Fi STA network found among ${candidates.size} candidates")
+        }
+        return bestCandidate
+    }
+
+    /**
+     * Synchronously retrieves the current Upstream Wi-Fi state and associated Network object.
+     * Uses deterministic ranking to avoid selecting downstream SoftAP interfaces.
+     */
+    fun getUpstreamWifiState(): UpstreamWifiState {
+        val best = findBestUpstreamWifiNetwork() ?: return UpstreamWifiState.Disconnected
+        val caps = best.capabilities
+        val primaryIp = best.ipAddresses.firstOrNull()
+
+        if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)) {
+            return UpstreamWifiState.CaptivePortalDetected
+        }
+
+        val hasInternet = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        val isValidated = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+
+        // If validated, or if it has INTERNET capability and a valid assigned IPv4 address,
+        // it is ready for explicit socket binding.
+        return if (isValidated || (hasInternet && best.ipAddresses.isNotEmpty())) {
+            UpstreamWifiState.Authenticated(best.network, primaryIp)
+        } else if (best.ipAddresses.isNotEmpty() && best.hasDefaultRoute) {
+            // Android VALIDATED might be temporarily false / delayed on captive portal networks
+            // even after authentication. Treat as Authenticated so SOCKS5 can bind.
+            UpstreamWifiState.Authenticated(best.network, primaryIp)
+        } else if (best.ipAddresses.isNotEmpty()) {
+            UpstreamWifiState.ConnectedNoInternet
+        } else {
+            UpstreamWifiState.Disconnected
+        }
     }
 
     /**
      * Returns the active authenticated Wi-Fi Network handle, if available.
      */
     fun getAuthenticatedWifiNetwork(): Network? {
-        val state = getUpstreamWifiState()
-        return (state as? UpstreamWifiState.Authenticated)?.network
+        val best = findBestUpstreamWifiNetwork() ?: return null
+        return if (best.score > 0 && best.ipAddresses.isNotEmpty()) {
+            best.network
+        } else {
+            null
+        }
     }
 
     /**
@@ -138,18 +289,27 @@ class NetworkManager(private val context: Context) {
 
         val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
+                Log.d(TAG, "NetworkCallback.onAvailable: $network")
                 trySend(getUpstreamWifiState())
             }
 
             override fun onLost(network: Network) {
+                Log.d(TAG, "NetworkCallback.onLost: $network")
                 trySend(getUpstreamWifiState())
             }
 
             override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) {
+                Log.d(TAG, "NetworkCallback.onCapabilitiesChanged: $network")
+                trySend(getUpstreamWifiState())
+            }
+
+            override fun onLinkPropertiesChanged(network: Network, linkProperties: LinkProperties) {
+                Log.d(TAG, "NetworkCallback.onLinkPropertiesChanged: $network")
                 trySend(getUpstreamWifiState())
             }
 
             override fun onUnavailable() {
+                Log.d(TAG, "NetworkCallback.onUnavailable")
                 trySend(UpstreamWifiState.Disconnected)
             }
         }
@@ -174,13 +334,6 @@ class NetworkManager(private val context: Context) {
      * SYSTEM ARCHITECTURE NOTE:
      * Calling Network.bindSocket(socket) instructs the Linux kernel / Android netd to route this
      * socket's file descriptor strictly through the Wi-Fi network's routing table (fwmark / uid_routing).
-     *
-     * Why this circumvents ISP tethering detection:
-     * - Native Android tethering (NAT via iptables) decrements the IP Time-To-Live (TTL) header by 1
-     *   (from laptop's default 128 on Windows or 64 on macOS to 127/63). ISP DPI rules flag this TTL mismatch.
-     * - When using SOCKS5 + Network.bindSocket(), the phone's Android OS terminates the laptop's TCP connection,
-     *   and opens a brand new TCP connection directly from the phone. The phone's kernel generates the IP packet
-     *   with standard Android TTL (64) and legitimate phone TCP fingerprint.
      */
     fun bindSocketToUpstream(socket: Socket, targetNetwork: Network? = null): Boolean {
         val network = targetNetwork ?: getAuthenticatedWifiNetwork() ?: return false
@@ -213,7 +366,7 @@ class NetworkManager(private val context: Context) {
         }
 
     /**
-     * Inspects local network interfaces to detect active Hotspot (ap0, wlan1, softap)
+     * Inspects local network interfaces to detect active Hotspot (swlan0, ap0, softap)
      * or USB Tethering (rndis0, usb0, etc.) interfaces.
      */
     fun detectDownstreamState(): DownstreamState {
@@ -238,8 +391,8 @@ class NetworkManager(private val context: Context) {
                 if (ips.isEmpty()) continue
 
                 // Check for Wi-Fi Hotspot / SoftAP interfaces
-                // Samsung Galaxy Note 8 typically uses 'ap0', 'softap0', or a secondary 'wlan' alias
-                if (name.contains("ap") || name.contains("softap") || name.contains("wlan1") || name.contains("swlan")) {
+                // Samsung Galaxy Note 8 uses 'swlan0', 'ap0', 'softap0', or secondary 'wlan' alias
+                if (name.contains("swlan") || name.contains("softap") || name.contains("ap") || name.contains("wlan1")) {
                     hotspotIface = iface
                     hotspotIps.addAll(ips)
                 } else if (name.contains("rndis") || name.contains("usb") || name.contains("ncm")) {
@@ -309,42 +462,103 @@ class NetworkManager(private val context: Context) {
 
     /**
      * Executes a complete live test verifying that:
-     * 1. The upstream Wi-Fi Network is active.
-     * 2. An outbound TCP socket successfully binds via Network.bindSocket().
-     * 3. An HTTP round-trip successfully completes through the authenticated session.
+     * 1. The upstream Wi-Fi Network is active and ranked.
+     * 2. An IPv4 address is assigned.
+     * 3. DNS resolution succeeds over the Wi-Fi Network.
+     * 4. An outbound TCP socket successfully binds via Network.bindSocket().
+     * 5. An HTTP round-trip successfully completes through the authenticated session.
      */
     suspend fun testUpstreamConnection(): ConnectionTestResult = withContext(Dispatchers.IO) {
         val startTime = System.currentTimeMillis()
-        val network = getAuthenticatedWifiNetwork()
+        val candidate = findBestUpstreamWifiNetwork()
             ?: return@withContext ConnectionTestResult(
                 isSuccess = false,
                 latencyMs = 0,
                 resolvedIp = null,
                 httpCode = null,
-                message = "No active/authenticated Wi-Fi network detected to bind."
+                socketBound = false,
+                message = "No upstream Wi-Fi STA network detected (checked all active network interfaces)."
             )
 
+        val network = candidate.network
+        val ifaceName = candidate.interfaceName.ifEmpty { "wlan" }
+        val ip = candidate.ipAddresses.firstOrNull()
+
+        if (ip == null) {
+            return@withContext ConnectionTestResult(
+                isSuccess = false,
+                latencyMs = 0,
+                resolvedIp = null,
+                httpCode = null,
+                socketBound = false,
+                message = "Upstream Wi-Fi network found ($ifaceName), but no valid IPv4 address is assigned."
+            )
+        }
+
+        // Step 1: DNS Resolution over bound network
+        val targetHost = PROBE_URL_HOST
+        val resolved = resolveHostOnUpstream(targetHost, network)
+        if (resolved == null) {
+            val latency = System.currentTimeMillis() - startTime
+            return@withContext ConnectionTestResult(
+                isSuccess = false,
+                latencyMs = latency,
+                resolvedIp = null,
+                httpCode = null,
+                socketBound = false,
+                message = "DNS resolution failed via upstream Wi-Fi ($ifaceName) for '$targetHost'."
+            )
+        }
+
+        // Step 2: Open socket and bind explicitly to Wi-Fi network
+        val socket = Socket()
+        var socketBound = false
         try {
-            // Step 1: DNS Resolution over bound network
-            val targetHost = "connectivitycheck.gstatic.com"
-            val resolved = resolveHostOnUpstream(targetHost, network)
-                ?: return@withContext ConnectionTestResult(
-                    isSuccess = false,
-                    latencyMs = System.currentTimeMillis() - startTime,
-                    resolvedIp = null,
-                    httpCode = null,
-                    message = "DNS resolution failed over Wi-Fi interface."
-                )
-
-            // Step 2: Open socket and bind to Wi-Fi network
-            val socket = Socket()
             network.bindSocket(socket)
-            socket.soTimeout = PROBE_TIMEOUT_MS
+            socketBound = true
+        } catch (e: Exception) {
+            socket.closeQuietly()
+            val latency = System.currentTimeMillis() - startTime
+            return@withContext ConnectionTestResult(
+                isSuccess = false,
+                latencyMs = latency,
+                resolvedIp = resolved.hostAddress,
+                httpCode = null,
+                socketBound = false,
+                message = "Network.bindSocket() failed on interface $ifaceName: ${e.message}"
+            )
+        }
 
-            // Step 3: Connect to port 80
+        // Step 3: Connect to port 80
+        socket.soTimeout = PROBE_TIMEOUT_MS
+        try {
             socket.connect(InetSocketAddress(resolved, 80), PROBE_TIMEOUT_MS)
+        } catch (e: SocketTimeoutException) {
+            socket.closeQuietly()
+            val latency = System.currentTimeMillis() - startTime
+            return@withContext ConnectionTestResult(
+                isSuccess = false,
+                latencyMs = latency,
+                resolvedIp = resolved.hostAddress,
+                httpCode = null,
+                socketBound = true,
+                message = "Socket bound successfully, but TCP connect to ${resolved.hostAddress}:80 timed out."
+            )
+        } catch (e: Exception) {
+            socket.closeQuietly()
+            val latency = System.currentTimeMillis() - startTime
+            return@withContext ConnectionTestResult(
+                isSuccess = false,
+                latencyMs = latency,
+                resolvedIp = resolved.hostAddress,
+                httpCode = null,
+                socketBound = true,
+                message = "Socket bound successfully, but TCP connect to ${resolved.hostAddress}:80 failed: ${e.message}"
+            )
+        }
 
-            // Step 4: Transmit raw HTTP HEAD/GET request
+        // Step 4: Transmit raw HTTP GET /generate_204 request
+        try {
             val output = socket.getOutputStream()
             val request = "GET /generate_204 HTTP/1.1\r\nHost: $targetHost\r\nConnection: close\r\n\r\n"
             output.write(request.toByteArray(Charsets.US_ASCII))
@@ -352,18 +566,28 @@ class NetworkManager(private val context: Context) {
 
             val reader = BufferedReader(InputStreamReader(socket.getInputStream(), Charsets.US_ASCII))
             val statusLine = reader.readLine() ?: ""
-            socket.close()
+            socket.closeQuietly()
 
             val latency = System.currentTimeMillis() - startTime
             val statusCode = statusLine.split(" ").getOrNull(1)?.toIntOrNull()
 
-            if (statusCode == 204 || statusCode == 200 || (statusCode != null && statusCode < 400)) {
+            if (statusCode == 204 || statusCode == 200) {
                 ConnectionTestResult(
                     isSuccess = true,
                     latencyMs = latency,
                     resolvedIp = resolved.hostAddress,
                     httpCode = statusCode,
-                    message = "Success! Socket bound to Wi-Fi. Latency: ${latency}ms (HTTP $statusCode)"
+                    socketBound = true,
+                    message = "Success! Socket bound to Wi-Fi ($ifaceName - $ip). Latency: ${latency}ms (HTTP $statusCode)"
+                )
+            } else if (statusCode != null && statusCode in 300..399) {
+                ConnectionTestResult(
+                    isSuccess = false,
+                    latencyMs = latency,
+                    resolvedIp = resolved.hostAddress,
+                    httpCode = statusCode,
+                    socketBound = true,
+                    message = "Captive portal redirect detected (HTTP $statusCode). Please sign in via the portal button."
                 )
             } else {
                 ConnectionTestResult(
@@ -371,34 +595,27 @@ class NetworkManager(private val context: Context) {
                     latencyMs = latency,
                     resolvedIp = resolved.hostAddress,
                     httpCode = statusCode,
-                    message = "Captive portal redirect detected or unexpected response: $statusLine"
+                    socketBound = true,
+                    message = "Unexpected HTTP response from probe: ${statusLine.ifEmpty { "Empty response" }}"
                 )
             }
         } catch (e: Exception) {
+            socket.closeQuietly()
             val latency = System.currentTimeMillis() - startTime
-            Log.e(TAG, "Test connection failed", e)
             ConnectionTestResult(
                 isSuccess = false,
                 latencyMs = latency,
-                resolvedIp = null,
+                resolvedIp = resolved.hostAddress,
                 httpCode = null,
-                message = "Binding Test Failed: ${e.message ?: e.javaClass.simpleName}"
+                socketBound = true,
+                message = "HTTP probe request failed: ${e.message ?: e.javaClass.simpleName}"
             )
         }
     }
 
-    private fun getIpForNetwork(network: Network): String? {
+    private fun Socket.closeQuietly() {
         try {
-            val lp = connectivityManager.getLinkProperties(network) ?: return null
-            for (la in lp.linkAddresses) {
-                val address = la.address
-                if (address is Inet4Address && !address.isLoopbackAddress) {
-                    return address.hostAddress
-                }
-            }
-        } catch (e: Exception) {
-            Log.w(TAG, "Failed to get IP for network: ${e.message}")
-        }
-        return null
+            close()
+        } catch (_: Exception) {}
     }
 }

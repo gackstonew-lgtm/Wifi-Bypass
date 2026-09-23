@@ -182,7 +182,9 @@ class MainActivity : AppCompatActivity() {
                     if (result.latencyMs > 0) {
                         append("\n• Upstream Round-Trip: ").append(result.latencyMs).append(" ms")
                     }
-                    append("\n• Socket Binding: Verified via Network.bindSocket()")
+                    if (result.socketBound) {
+                        append("\n• Socket Binding: Verified via Network.bindSocket()")
+                    }
                 }
                 binding.diagnosticResultText.text = details
             }
